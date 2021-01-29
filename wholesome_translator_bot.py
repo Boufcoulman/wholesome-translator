@@ -4,6 +4,8 @@ from requests import get
 import discord
 import os
 from dotenv import load_dotenv
+from operator import add
+from functools import reduce
 
 # Les paramètres sont à placer dans un fichier .env dans le même repertoire que le script, avec le formalisme suivant :
 # DISCORD_TOKEN='{bot_token}'
@@ -46,22 +48,21 @@ async def on_reaction_add(reaction, user):
     # Si la réaction est le drapeau rouge ":triangular_flag_on_post:"
     if "'\\U0001f6a9'" == ascii(reaction.emoji):
 
-        # Epuration du message pour l'API google WIP
-        epurated_message = reaction.message.content
-
         # Appel de l'API google
         google_api_base = "https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=auto&tl=fr&q="
-        request_result = get(google_api_base + epurated_message)
+        request_result = get(google_api_base + reaction.message.content)
 
         # Récupération des informations de traduction
         translated_text = loads(request_result.text)
         src_msg = reaction.message.content
         src_lang = LANGUAGES[translated_text[2]]
-        fr_trad = translated_text[0][0][0]
+        fr_trads = [sentence[0] for sentence in translated_text[0]]
 
         # Envoie en mp de la traduction
         await user.create_dm()
-        await user.dm_channel.send(f'"{src_msg}"\ntraduit du "{src_lang.capitalize()}" en\n"{fr_trad.capitalize()}"')
+        await user.dm_channel.send(
+            f'"{src_msg}"\ntraduit du "{src_lang.capitalize()}" en\n"{reduce(add,[text.capitalize() for text in fr_trads])}"'
+        )
 
 
 client.run(TOKEN)
