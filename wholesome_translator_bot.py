@@ -1,11 +1,11 @@
 from googletrans import LANGUAGES
 from json import loads
-from requests import get
 import discord
 import os
 from dotenv import load_dotenv
 from operator import add
 from functools import reduce
+import bing
 
 # Les paramètres sont à placer dans un fichier .env dans le même repertoire que le script, avec le formalisme suivant :
 # DISCORD_TOKEN='{bot_token}'
@@ -16,6 +16,8 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 client = discord.Client()
 # Permet de definir le nombre de messages à garder en scrutation pour des suppressions notamment
 client.max_messages = 5000
+
+bingtranslate = bing.BingTranslate()
 
 
 @client.event
@@ -41,20 +43,17 @@ async def on_reaction_add(reaction, user):
     # Si la réaction est le drapeau rouge ":triangular_flag_on_post:"
     if "'\\U0001f6a9'" == ascii(reaction.emoji):
 
-        # Appel de l'API google
-        google_api_base = "https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=auto&tl=fr&q="
-        request_result = get(google_api_base + reaction.message.content)
+        # Message source
+        src_msg = reaction.message.content
 
         # Récupération des informations de traduction
-        translated_text = loads(request_result.text)
-        src_msg = reaction.message.content
-        src_lang = LANGUAGES[translated_text[2]]
-        fr_trads = [sentence[0] for sentence in translated_text[0]]
+        translated_text = bingtranslate.translate(src_msg, "fr")
+        src_lang = bingtranslate.language(src_msg)[0]
 
         # Envoie en mp de la traduction
         await user.create_dm()
         await user.dm_channel.send(
-            f'"{src_msg}"\ntraduit du "{src_lang.capitalize()}" en\n"{reduce(add,[text.capitalize() for text in fr_trads])}"'
+            f'"{src_msg}"\ntraduit du "{src_lang.upper()}" en\n"{translated_text}"'
         )
 
 
