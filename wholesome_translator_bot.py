@@ -12,6 +12,8 @@ import bing
 # DISCORD_GUILD='{nom_du_serveur}'
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+MUDAE = os.getenv('MUDAE')
+POKEMON_CHANNEL = os.getenv('POKEMON_CHANNEL')
 
 client = discord.Client()
 # Permet de definir le nombre de messages à garder en scrutation pour des suppressions notamment
@@ -29,6 +31,33 @@ async def on_ready():
     print(
         f'{client.user} is connected\n'
     )
+
+
+@client.event
+async def on_message(message):
+    '''
+    Se déclenche dès qu'un message est posté
+    '''
+    # Empêche le déclenchement du bot par lui même
+    if message.author == client.user:
+        return
+
+    # Embête Muade si c'est elle qui a parlé dans le channel pokemon
+    if message.author == MUDAE and str(message.channel) == POKEMON_CHANNEL:
+        if "psyduck" in message.content.lower():
+            # <Emoji id=751143555904307310 name='koin' animated=False managed=False>
+            koin_emoji = discord.utils.get(client.emojis, id=751143555904307310)
+            await message.add_reaction(koin_emoji)
+
+        if "koikingu" in message.content.lower():
+            # <Emoji id=481411448862670851 name='koikingu' animated=False managed=False>
+            koikingu_emoji = discord.utils.get(client.emojis, id=481411448862670851)
+            await message.add_reaction(koikingu_emoji)
+
+        if "uncommon nothing" in message.content:
+            # <:grrpin:750840460192514068>
+            grrpin_emoji = discord.utils.get(client.emojis, id=750840460192514068)
+            await message.add_reaction(grrpin_emoji)
 
 
 @client.event
@@ -57,4 +86,5 @@ async def on_reaction_add(reaction, user):
         )
 
 
-client.run(TOKEN)
+if __name__ == "__main__":
+    client.run(TOKEN)

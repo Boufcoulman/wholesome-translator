@@ -2,6 +2,7 @@
 
 from json import loads
 from requests import post
+from functools import lru_cache
 
 HEADERS = {
     "Host": "www.bing.com",
@@ -56,6 +57,7 @@ class BingTranslate():
     def __init__(self) -> None:
         pass
 
+    @lru_cache(maxsize=5000)
     def translate(self, text, destination_language, source_language="auto-detect"):
         """
         Translates the given text to the given language
@@ -113,6 +115,7 @@ class BingTranslate():
         except:
             return None
 
+    @lru_cache(maxsize=5000)
     def language(self, text):
         """
         Gives back the language of the given text
