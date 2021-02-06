@@ -43,7 +43,7 @@ async def on_message(message):
         return
 
     # Embête Muade si c'est elle qui a parlé dans le channel pokemon
-    if message.author == MUDAE and str(message.channel) == POKEMON_CHANNEL:
+    if str(message.author) == MUDAE and str(message.channel) == POKEMON_CHANNEL:
         if "psyduck" in message.content.lower():
             # <Emoji id=751143555904307310 name='koin' animated=False managed=False>
             koin_emoji = discord.utils.get(client.emojis, id=751143555904307310)
