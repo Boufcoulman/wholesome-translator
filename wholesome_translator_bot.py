@@ -49,7 +49,7 @@ async def on_message(message):
             koin_emoji = discord.utils.get(client.emojis, id=751143555904307310)
             await message.add_reaction(koin_emoji)
 
-        if "koikingu" in message.content.lower():
+        if "magikarp" in message.content.lower():
             # <Emoji id=481411448862670851 name='koikingu' animated=False managed=False>
             koikingu_emoji = discord.utils.get(client.emojis, id=481411448862670851)
             await message.add_reaction(koikingu_emoji)
