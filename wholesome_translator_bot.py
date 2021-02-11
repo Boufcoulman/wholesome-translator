@@ -53,19 +53,16 @@ async def on_message(message):
     # Embête Muade si c'est elle qui a parlé dans le channel pokemon
     if str(message.author) == MUDAE and str(message.channel) == POKEMON_CHANNEL:
         if "psyduck" in message.content.lower():
-            koin_emoji = discord.utils.get(client.emojis, id=PSYDUCK_ID)
+            koin_emoji = discord.utils.get(client.emojis, id=int(PSYDUCK_ID))
             await message.add_reaction(koin_emoji)
-            return
 
         if "magikarp" in message.content.lower():
-            koikingu_emoji = discord.utils.get(client.emojis, id=KOIKINGU_ID)
+            koikingu_emoji = discord.utils.get(client.emojis, id=int(KOIKINGU_ID))
             await message.add_reaction(koikingu_emoji)
-            return
 
         if "uncommon nothing" in message.content:
-            grrpin_emoji = discord.utils.get(client.emojis, id=GRRPIN_ID)
+            grrpin_emoji = discord.utils.get(client.emojis, id=int(GRRPIN_ID))
             await message.add_reaction(grrpin_emoji)
-            return
 
     # Ajoute le drapal sur les messages des channels langue
     language_channels = [
@@ -76,23 +73,18 @@ async def on_message(message):
     ]
     if str(message.channel) in language_channels:
         await message.add_reaction('\U0001f6a9')
-        return
 
     # Ajout la police flou si quelqu'un oublie de mettre en majuscule dans le channel majuscule sauf si c'est VIP
     if str(message.channel) == MAJ_CHAN and str(message.author) != VIP:
         words = message.content.strip().split(' ')
-        min_count = 0
-        for word in words:
-            if any(letter.islower() for letter in word):
-                min_count += 1
+        min_count = sum(any(c.islower() for c in s) for s in words)
 
         if min_count/len(words) > 0.25:
-            floucop_emoji = discord.utils.get(client.emojis, id=FLOUCOP_ID)
+            floucop_emoji = discord.utils.get(client.emojis, id=int(FLOUCOP_ID))
             await message.add_reaction(floucop_emoji)
-            return
 
 
-@client.event
+@ client.event
 async def on_reaction_add(reaction, user):
     '''
     Se déclenche dès qu'un utilisateur ajoute une réaction
