@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import bing
 
 log = logging.getLogger(__name__)
+log.addHandler(logging.StreamHandler())
 
 # Les paramètres sont à placer dans un fichier .env dans le même repertoire que
 # le script, avec le formalisme suivant : DISCORD_TOKEN='{bot_token}'
