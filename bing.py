@@ -1,130 +1,228 @@
-# Source : https://github.com/Animenosekai/translate/blob/main/translators/bing.py
+"""Interface to Bing's tranlation API."""
 
-from json import loads
-from requests import post
+import json
 from functools import lru_cache
 
-HEADERS = {
-    "Host": "www.bing.com",
-    "User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0",
-    "Accept": "*/*",
-    "Accept-Language": "en-US,en;q=0.5",
-    "Accept-Encoding": "gzip, deflate",
-    "Referer": "https://www.bing.com/",
-    "Content-Type": "application/x-www-form-urlencoded",
-    "Connection": "keep-alive"
+from requests import post
+
+default_headers = {
+    'Host': 'www.bing.com',
+    'Accept': '*/*',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Accept-Encoding': 'gzip, deflate',
+    'Referer': 'https://www.bing.com/',
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Connection': 'keep-alive',
+    'User-Agent':
+    'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0',
 }
-PARAMS = {'IG': '839D27F8277F4AA3B0EDB83C255D0D70', 'IID': 'translator.5033.3'}
+default_parameters = {
+    'IG': '839D27F8277F4AA3B0EDB83C255D0D70',
+    'IID': 'translator.5033.3',
+}
+
+MAX_CACHE = 5000
 
 
-class Example():
-    class SourceExample():
-        def __init__(self, data) -> None:
-            self._data = data
-            self.prefix = self._data.get("sourcePrefix", "")
-            self.term = self._data.get("sourceTerm", "")
-            self.suffix = self._data.get("sourceSuffix", "")
-            self.example = self.prefix + self.term + self.suffix
+class SourceExample(object):
+    """Example use of a text in the source language."""
 
-        def __repr__(self) -> str:
-            return str(self.example)
+    def __init__(self, example_json) -> None:
+        """Initialise the source example.
 
-    class DestinationExample():
-        def __init__(self, data) -> None:
-            self._data = data
-            self.prefix = self._data.get("targetPrefix", "")
-            self.term = self._data.get("targetTerm", "")
-            self.suffix = self._data.get("targetSuffix", "")
-            self.example = self.prefix + self.term + self.suffix
-
-        def __repr__(self) -> str:
-            return str(self.example)
-
-    def __init__(self, data) -> None:
-        self._data = data
-        self.source = self.SourceExample(self._data)
-        self.destination = self.DestinationExample(self._data)
+        Args:
+            example_json: body of the response from Bing
+        """
+        self.prefix = example_json.get('sourcePrefix', '')
+        self.term = example_json.get('sourceTerm', '')
+        self.suffix = example_json.get('sourceSuffix', '')
+        self.example = self.prefix + self.term + self.suffix
 
     def __repr__(self) -> str:
+        """Full source example.
+
+        Returns:
+            the complete example
+        """
+        return str(self.example)
+
+
+class DestinationExample(object):
+    """Example use of a text in the target language."""
+
+    def __init__(self, example_json) -> None:
+        """Initialise the target example.
+
+        Args:
+            example_json: body of the response from Bing
+        """
+        self.prefix = example_json.get('targetPrefix', '')
+        self.term = example_json.get('targetTerm', '')
+        self.suffix = example_json.get('targetSuffix', '')
+        self.example = self.prefix + self.term + self.suffix
+
+    def __repr__(self) -> str:
+        """Full target example.
+
+        Returns:
+            the complete example
+        """
+        return str(self.example)
+
+
+class Example(object):
+    """Example use of a text in both soure and target languages."""
+
+    def __init__(self, example_json) -> None:
+        """Initialise the example.
+
+        Args:
+            example_json: body of the response from Bing
+        """
+        self.source = SourceExample(example_json)
+        self.destination = DestinationExample(example_json)
+
+    def __repr__(self) -> str:
+        """Full source example.
+
+        Returns:
+            the complete source example
+        """
         return str(self.source)
 
 
-class BingTranslate():
-    """
-    A Python implementation of Microsoft Bing Translation's APIs
-    """
+class BingTranslate(object):
+    """A Python implementation of Microsoft Bing Translation's APIs."""
 
-    def __init__(self) -> None:
-        pass
+    def example(self, text, destination_language, source_language=None):
+        """Return examples for the given text.
 
-    @lru_cache(maxsize=5000)
-    def translate(self, text, destination_language, source_language="auto-detect"):
+        Args:
+            text: text that we want to have examples of
+            destination_language: language we want to see examples of
+            source_language: langue of `text`, autodetected if None
+
+        Returns:
+            examples of the translation of `text` in target language
         """
-        Translates the given text to the given language
-        """
-        try:
-            if source_language is None:
-                source_language = "auto-detect"
-            request = post("https://www.bing.com/ttranslatev3", headers=HEADERS, params=PARAMS, data={'text': str(text), 'fromLang': str(source_language), 'to': str(destination_language)})
-            if request.status_code < 400:
-                return loads(request.text)[0]["translations"][0]["text"]
-            else:
-                return None
-        except:
+        if source_language is None:
+            source_language = self.language(text)
+        if source_language is None:
             return None
 
-    def example(self, text, destination_language, source_language="auto-detect"):
-        """
-        Return examples for the given text
-        """
-        try:
-            if source_language is None:
-                source_language = self.language(text)
-                if source_language is None:
-                    return None
-            translation = self.translate(text, destination_language, source_language)
-            if translation is None:
-                return None
-            request = post("https://www.bing.com/texamplev3", headers=HEADERS, params=PARAMS, data={'text': str(text).lower(), 'from': str(source_language), 'to': str(destination_language), 'translation': str(translation).lower()})
-            print(request.text)
-            print(request.status_code)
-            if request.status_code < 400:
-                return [Example(example) for example in loads(request.text)[0]["examples"]]
-            else:
-                return None
-        except:
+        translation = self.translate(
+            text,
+            destination_language,
+            source_language,
+        )
+        if translation is None:
             return None
+
+        try:
+            response = post(
+                'https://www.bing.com/texamplev3',
+                headers=default_headers,
+                params=default_parameters,
+                data={
+                    'text': str(text).lower(),
+                    'from': str(source_language),
+                    'to': str(destination_language),
+                    'translation': str(translation).lower(),
+                },
+            )
+        except Exception:
+            return None
+        if not response.ok:
+            return None
+        examples = json.loads(response.text)[0]['examples']
+        return [Example(example) for example in examples]
 
     def spellcheck(self, text, source_language=None):
+        """Check the spelling of the given text.
+
+        Args:
+            text: the text that we want to spellcheck
+            source_language: language of `text`, or autodetect if None
+
+        Returns:
+            automatically corrected text
         """
-        Checks the spelling of the given text
-        """
+        if source_language is None:
+            source_language = self.language(text)
+        if source_language is None:
+            return None
         try:
-            if source_language is None:
-                source_language = self.language(text)
-                if source_language is None:
-                    return None
-            request = post("https://www.bing.com/tspellcheckv3", headers=HEADERS, params=PARAMS, data={'text': str(text), 'fromLang': str(source_language)})
-            if request.status_code < 400:
-                result = loads(request.text)["correctedText"]
-                if result == "":
-                    return text
-                return result
-            else:
-                return None
-        except:
+            response = post(
+                'https://www.bing.com/tspellcheckv3',
+                headers=default_headers,
+                params=default_parameters,
+                data={'text': str(text), 'fromLang': str(source_language)},
+            )
+        except Exception:
             return None
 
-    @lru_cache(maxsize=5000)
+        if not response.ok:
+            return None
+
+        corrected_text = json.loads(response.text)['correctedText']
+        return corrected_text or text
+
+    @lru_cache(maxsize=MAX_CACHE)
     def language(self, text):
-        """
-        Gives back the language of the given text
+        """Give back the language of the given text.
+
+        Args:
+            text: the original text whose language we want to detect
+
+        Returns:
+            the source language of the text
         """
         try:
-            request = post("https://www.bing.com/ttranslatev3", headers=HEADERS, params=PARAMS, data={'text': str(text), 'fromLang': "auto-detect", 'to': "en"})
-            if request.status_code < 400:
-                return loads(request.text)[0]["detectedLanguage"]["language"]
-            else:
-                return None
-        except:
+            response = post(
+                'https://www.bing.com/ttranslatev3',
+                headers=default_headers,
+                params=default_parameters,
+                data={
+                    'text': str(text),
+                    'fromLang': 'auto-detect',
+                    'to': 'en',
+                },
+            )
+        except Exception:
             return None
+
+        if not response.ok:
+            return None
+        return json.loads(response.text)[0]['detectedLanguage']['language']
+
+    @lru_cache(maxsize=MAX_CACHE)
+    def translate(self, text, destination_language, source_language=None):
+        """Translate the given text to the given language.
+
+        Args:
+            text: the text to translate
+            destination_language: the language to translate into
+            source_language: the text's language, or autodetect if it's None
+
+        Returns:
+            translated text if all went well or None otherwise
+        """
+        if source_language is None:
+            source_language = 'auto-detect'
+        try:
+            response = post(
+                'https://www.bing.com/ttranslatev3',
+                headers=default_headers,
+                params=default_parameters,
+                data={
+                    'text': str(text),
+                    'fromLang': str(source_language),
+                    'to': str(destination_language),
+                },
+            )
+        except Exception:
+            return None
+
+        if not response.ok:
+            return None
+        return json.loads(response.text)[0]['translations'][0]['text']
