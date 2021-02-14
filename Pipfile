@@ -13,6 +13,7 @@ discord = "*"
 python-dotenv = "*"
 googletrans = "*"
 requests = "*"
+asyncio = "*"
 
 [requires]
 python_version = "3.7"

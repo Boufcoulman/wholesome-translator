@@ -1,6 +1,7 @@
 """Discord bot that interacts with the Wholesome discord."""
 import logging
 import os
+import asyncio
 
 import discord
 from dotenv import load_dotenv
@@ -46,13 +47,16 @@ async def on_message(message):
     Args:
         message: The message that was just posted on the channel
     """
-    # Empêche le déclenchement du bot par lui même
+    # Stop the bot to trigger himself
     if message.author == client.user:
         return
 
-    poke_react(message)
-    auto_language_flag(message)
-    capital_letters_cop(message)
+    # Handle the calls of on_message actions
+    await asyncio.wait([
+        poke_react(message),
+        auto_language_flag(message),
+        capital_letters_cop(message),
+    ])
 
 
 @ client.event
@@ -67,17 +71,17 @@ async def on_reaction_add(reaction, user):
     if user == client.user:
         return
 
-    # Si la réaction est le drapeau rouge ':triangular_flag_on_post:'
+    # If reaction is the red flag ':triangular_flag_on_post:'
     if ascii(reaction.emoji) == r"'\U0001f6a9'":
 
         # Message source
         src_msg = reaction.message.content
 
-        # Récupération des informations de traduction
+        # Getting translation infos
         translated_text = bingtranslate.translate(src_msg, 'fr')
         src_lang = bingtranslate.language(src_msg)[0].upper()
 
-        # Envoie en mp de la traduction
+        # Send traduction to private message of the user reacting
         await user.create_dm()
         await user.dm_channel.send(
             f"'{src_msg}'\ntraduit du '{src_lang}' en\n'{translated_text}'",
