@@ -2,15 +2,18 @@
 import logging
 import asyncio
 import toml
+import os
 
 import discord
+from dotenv import load_dotenv
 
 import bing
 
 log = logging.getLogger(__name__)
 log.addHandler(logging.StreamHandler())
 
-var_path = "config.toml"
+load_dotenv()
+var_path = os.getenv('CONFIG_PATH')
 try:
     config_vars = toml.load(var_path)
 except FileNotFoundError:
