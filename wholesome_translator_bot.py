@@ -37,13 +37,13 @@ client.max_messages = 5000
 bingtranslate = bing.BingTranslate()
 
 
-@ client.event
+@client.event
 async def on_ready():
     """Indique que le bot s'est correctement connecté."""
     log.info(f'{client.user} is connected\n')
 
 
-@ client.event
+@client.event
 async def on_message(message):
     """Se déclenche dès qu'un message est posté.
 
@@ -63,7 +63,7 @@ async def on_message(message):
     ])
 
 
-@ client.event
+@client.event
 async def on_reaction_add(reaction, user):
     """Se déclenche dès qu'un utilisateur ajoute une réaction.
 
