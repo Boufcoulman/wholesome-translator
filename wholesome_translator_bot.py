@@ -11,9 +11,7 @@ import bing
 log = logging.getLogger(__name__)
 log.addHandler(logging.StreamHandler())
 
-# Les paramètres sont à placer dans un fichier .env dans le même repertoire que
-# le script, avec le formalisme suivant : DISCORD_TOKEN='{bot_token}'
-# or DISCORD_GUILD='{nom_du_serveur}'
+
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 MUDAE = os.getenv('MUDAE')
@@ -23,12 +21,11 @@ KOIKINGU_ID = os.getenv('KOIKINGU_ID')
 GRRPIN_ID = os.getenv('GRRPIN_ID')
 FLOUCOP_ID = os.getenv('FLOUCOP_ID')
 VIP = os.getenv('VIP')
-MAJ_CHAN = os.getenv('MAJ_CHAN')
+CAPS_CHAN = os.getenv('CAPS_CHAN')
 
 
 client = discord.Client()
-# Permet de definir le nombre de messages à garder en scrutation pour des
-# suppressions notamment
+# Define nomber of message kept in scrutation
 client.max_messages = 5000
 
 bingtranslate = bing.BingTranslate()
@@ -47,7 +44,7 @@ async def on_message(message):
     Args:
         message: The message that was just posted on the channel
     """
-    # Stop the bot to trigger himself
+    # Keep the bot from triggering himself
     if message.author == client.user:
         return
 
@@ -67,7 +64,7 @@ async def on_reaction_add(reaction, user):
         reaction: the reaction that was added to the bot's message
         user: the user that added the reaction
     """
-    # Empêche le déclenchement du bot par lui même
+    # Keep the bot from triggering himself
     if user == client.user:
         return
 
@@ -108,13 +105,13 @@ async def capital_letters_cop(message):
     """React to uncapitalized messages in spicy_capitals, except for VIP people.
 
     When people post messages with less than a certain amount of capitalized
-    words, we ract to them with bullry cop emoji.
+    words, we react to them with blurry cop emoji.
 
     Args:
         message: The message that was just posted on the channel
 
     """
-    if str(message.channel) != MAJ_CHAN or str(message.author) == VIP:
+    if str(message.channel) != CAPS_CHAN or str(message.author) == VIP:
         return
 
     words = message.content.split()
@@ -138,7 +135,7 @@ async def poke_react(message):
     channel = str(message.channel)
     author = str(message.author)
 
-    # Embête Muade si c'est elle qui a parlé dans le channel pokemon
+    # Interract with bot Muade if she spoke pokemon channel
     if author != MUDAE or channel != POKEMON_CHANNEL:
         return
 
