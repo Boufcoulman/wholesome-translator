@@ -59,6 +59,7 @@ async def on_message(message):
         poke_react(message),
         auto_language_flag(message),
         capital_letters_cop(message),
+        hearts_on_presentation(message),
     ])
 
 
@@ -89,6 +90,18 @@ async def on_reaction_add(reaction, user):
         await user.dm_channel.send(
             f"'{src_msg}'\ntraduit du '{src_lang}' en\n'{translated_text}'",
         )
+
+
+async def hearts_on_presentation(message):
+    """Add heart reactions in presentation channel.
+
+    Args:
+        message: The message that was just posted on the channel
+    """
+    if str(message.channel) == str(PRES_CHAN):
+        hearts = ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤎', '🤍']
+        for heart in hearts:
+            await message.add_reaction(heart)
 
 
 async def auto_language_flag(message):
