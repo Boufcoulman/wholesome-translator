@@ -1,27 +1,33 @@
 """Discord bot that interacts with the Wholesome discord."""
 import logging
-import os
 import asyncio
+import toml
 
 import discord
-from dotenv import load_dotenv
 
 import bing
 
 log = logging.getLogger(__name__)
 log.addHandler(logging.StreamHandler())
 
+var_path = "config.toml"
+try:
+    config_vars = toml.load(var_path)
+except FileNotFoundError:
+    print("File {0} not found :(.)".format(var_path))
+    raise
 
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
-MUDAE = os.getenv('MUDAE')
-POKEMON_CHANNEL = os.getenv('POKEMON_CHANNEL')
-PSYDUCK_ID = os.getenv('PSYDUCK_ID')
-KOIKINGU_ID = os.getenv('KOIKINGU_ID')
-GRRPIN_ID = os.getenv('GRRPIN_ID')
-FLOUCOP_ID = os.getenv('FLOUCOP_ID')
-VIP = os.getenv('VIP')
-CAPS_CHAN = os.getenv('CAPS_CHAN')
+TOKEN = config_vars['DISCORD_TOKEN']
+MUDAE = config_vars['MUDAE']
+POKEMON_CHANNEL = config_vars['POKEMON_CHANNEL']
+PSYDUCK_ID = config_vars['PSYDUCK_ID']
+KOIKINGU_ID = config_vars['KOIKINGU_ID']
+GRRPIN_ID = config_vars['GRRPIN_ID']
+BLURRYCOP_ID = config_vars['BLURRYCOP_ID']
+VIPS = config_vars['VIPS']
+CAPS_CHAN = config_vars['CAPS_CHAN']
+LANG_CHANS = config_vars['LANG_CHANS']
+PRES_CHAN = config_vars['PRES_CHAN']
 
 
 client = discord.Client()
@@ -53,10 +59,11 @@ async def on_message(message):
         poke_react(message),
         auto_language_flag(message),
         capital_letters_cop(message),
+        hearts_on_presentation(message),
     ])
 
 
-@ client.event
+@client.event
 async def on_reaction_add(reaction, user):
     """Se déclenche dès qu'un utilisateur ajoute une réaction.
 
@@ -85,19 +92,25 @@ async def on_reaction_add(reaction, user):
         )
 
 
+async def hearts_on_presentation(message):
+    """Add heart reactions in presentation channel.
+
+    Args:
+        message: The message that was just posted on the channel
+    """
+    if str(message.channel) == str(PRES_CHAN):
+        hearts = ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤎', '🤍']
+        for heart in hearts:
+            await message.add_reaction(heart)
+
+
 async def auto_language_flag(message):
     """Add the flag react in language channels.
 
     Args:
         message: The message that was just posted on the channel
     """
-    language_channels = [
-        'chit-chat-in-love-and-joy',
-        'charla-en-amor-y-alegria',
-        'diskussion-in-liebe-und-freude',
-        'worldwide-shitpostingue',
-    ]
-    if str(message.channel) in language_channels:
+    if str(message.channel) in LANG_CHANS:
         await message.add_reaction('\U0001f6a9')
 
 
@@ -111,7 +124,7 @@ async def capital_letters_cop(message):
         message: The message that was just posted on the channel
 
     """
-    if str(message.channel) != CAPS_CHAN or str(message.author) == VIP:
+    if str(message.channel) != CAPS_CHAN or str(message.author) in VIPS:
         return
 
     words = message.content.split()
@@ -121,7 +134,7 @@ async def capital_letters_cop(message):
     if min_count / len(words) > threshold:
         blurry_cop_emoji = discord.utils.get(
             client.emojis,
-            id=int(FLOUCOP_ID),
+            id=int(BLURRYCOP_ID),
         )
         await message.add_reaction(blurry_cop_emoji)
 
