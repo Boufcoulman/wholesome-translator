@@ -1,16 +1,17 @@
-from googletrans import LANGUAGES
-from json import loads
-import discord
+"""Discord bot that interacts with the Wholesome discord."""
+import logging
 import os
-from dotenv import load_dotenv
-from operator import add
-from functools import reduce
-import bing
-import re
+import asyncio
 
-# Les paramètres sont à placer dans un fichier .env dans le même repertoire que le script, avec le formalisme suivant :
-# DISCORD_TOKEN='{bot_token}'
-# DISCORD_GUILD='{nom_du_serveur}'
+import discord
+from dotenv import load_dotenv
+
+import bing
+
+log = logging.getLogger(__name__)
+log.addHandler(logging.StreamHandler())
+
+
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 MUDAE = os.getenv('MUDAE')
@@ -20,11 +21,11 @@ KOIKINGU_ID = os.getenv('KOIKINGU_ID')
 GRRPIN_ID = os.getenv('GRRPIN_ID')
 FLOUCOP_ID = os.getenv('FLOUCOP_ID')
 VIP = os.getenv('VIP')
-MAJ_CHAN = os.getenv('MAJ_CHAN')
+CAPS_CHAN = os.getenv('CAPS_CHAN')
 
 
 client = discord.Client()
-# Permet de definir le nombre de messages à garder en scrutation pour des suppressions notamment
+# Define nomber of message kept in scrutation
 client.max_messages = 5000
 
 bingtranslate = bing.BingTranslate()
@@ -32,83 +33,127 @@ bingtranslate = bing.BingTranslate()
 
 @client.event
 async def on_ready():
-    '''
-    Indique que le bot s'est correctement connecté
-    '''
-
-    print(
-        f'{client.user} is connected\n'
-    )
+    """Indique que le bot s'est correctement connecté."""
+    log.info(f'{client.user} is connected\n')
 
 
 @client.event
 async def on_message(message):
-    '''
-    Se déclenche dès qu'un message est posté
-    '''
-    # Empêche le déclenchement du bot par lui même
+    """Se déclenche dès qu'un message est posté.
+
+    Args:
+        message: The message that was just posted on the channel
+    """
+    # Keep the bot from triggering himself
     if message.author == client.user:
         return
 
-    # Embête Muade si c'est elle qui a parlé dans le channel pokemon
-    if str(message.author) == MUDAE and str(message.channel) == POKEMON_CHANNEL:
-        if "psyduck" in message.content.lower():
-            koin_emoji = discord.utils.get(client.emojis, id=int(PSYDUCK_ID))
-            await message.add_reaction(koin_emoji)
-
-        if "magikarp" in message.content.lower():
-            koikingu_emoji = discord.utils.get(client.emojis, id=int(KOIKINGU_ID))
-            await message.add_reaction(koikingu_emoji)
-
-        if "uncommon nothing" in message.content:
-            grrpin_emoji = discord.utils.get(client.emojis, id=int(GRRPIN_ID))
-            await message.add_reaction(grrpin_emoji)
-
-    # Ajoute le drapal sur les messages des channels langue
-    language_channels = [
-        'chit-chat-in-love-and-joy',
-        'charla-en-amor-y-alegria',
-        'diskussion-in-liebe-und-freude',
-        'worldwide-shitpostingue'
-    ]
-    if str(message.channel) in language_channels:
-        await message.add_reaction('\U0001f6a9')
-
-    # Ajout la police flou si quelqu'un oublie de mettre en majuscule dans le channel majuscule sauf si c'est VIP
-    if str(message.channel) == MAJ_CHAN and str(message.author) != VIP:
-        words = message.content.strip().split(' ')
-        min_count = sum(any(c.islower() for c in s) for s in words)
-
-        if min_count/len(words) > 0.25:
-            floucop_emoji = discord.utils.get(client.emojis, id=int(FLOUCOP_ID))
-            await message.add_reaction(floucop_emoji)
+    # Handle the calls of on_message actions
+    await asyncio.wait([
+        poke_react(message),
+        auto_language_flag(message),
+        capital_letters_cop(message),
+    ])
 
 
 @ client.event
 async def on_reaction_add(reaction, user):
-    '''
-    Se déclenche dès qu'un utilisateur ajoute une réaction
-    '''
-    # Empêche le déclenchement du bot par lui même
+    """Se déclenche dès qu'un utilisateur ajoute une réaction.
+
+    Args:
+        reaction: the reaction that was added to the bot's message
+        user: the user that added the reaction
+    """
+    # Keep the bot from triggering himself
     if user == client.user:
         return
 
-    # Si la réaction est le drapeau rouge ":triangular_flag_on_post:"
-    if "'\\U0001f6a9'" == ascii(reaction.emoji):
+    # If reaction is the red flag ':triangular_flag_on_post:'
+    if ascii(reaction.emoji) == r"'\U0001f6a9'":
 
         # Message source
         src_msg = reaction.message.content
 
-        # Récupération des informations de traduction
-        translated_text = bingtranslate.translate(src_msg, "fr")
-        src_lang = bingtranslate.language(src_msg)[0]
+        # Getting translation infos
+        translated_text = bingtranslate.translate(src_msg, 'fr')
+        src_lang = bingtranslate.language(src_msg)[0].upper()
 
-        # Envoie en mp de la traduction
+        # Send traduction to private message of the user reacting
         await user.create_dm()
         await user.dm_channel.send(
-            f'"{src_msg}"\ntraduit du "{src_lang.upper()}" en\n"{translated_text}"'
+            f"'{src_msg}'\ntraduit du '{src_lang}' en\n'{translated_text}'",
         )
 
 
-if __name__ == "__main__":
+async def auto_language_flag(message):
+    """Add the flag react in language channels.
+
+    Args:
+        message: The message that was just posted on the channel
+    """
+    language_channels = [
+        'chit-chat-in-love-and-joy',
+        'charla-en-amor-y-alegria',
+        'diskussion-in-liebe-und-freude',
+        'worldwide-shitpostingue',
+    ]
+    if str(message.channel) in language_channels:
+        await message.add_reaction('\U0001f6a9')
+
+
+async def capital_letters_cop(message):
+    """React to uncapitalized messages in spicy_capitals, except for VIP people.
+
+    When people post messages with less than a certain amount of capitalized
+    words, we react to them with blurry cop emoji.
+
+    Args:
+        message: The message that was just posted on the channel
+
+    """
+    if str(message.channel) != CAPS_CHAN or str(message.author) == VIP:
+        return
+
+    words = message.content.split()
+    min_count = sum(word.upper() != word for word in words)
+    threshold = 0.25
+
+    if min_count / len(words) > threshold:
+        blurry_cop_emoji = discord.utils.get(
+            client.emojis,
+            id=int(FLOUCOP_ID),
+        )
+        await message.add_reaction(blurry_cop_emoji)
+
+
+async def poke_react(message):
+    """Reacts to what Mudae returned from te pokeroulette.
+
+    Args:
+        message: The message that was just posted on the channel
+    """
+    channel = str(message.channel)
+    author = str(message.author)
+
+    # Interract with bot Muade if she spoke pokemon channel
+    if author != MUDAE or channel != POKEMON_CHANNEL:
+        return
+
+    if 'psyduck' in message.content.lower():
+        koin_emoji = discord.utils.get(client.emojis, id=int(PSYDUCK_ID))
+        await message.add_reaction(koin_emoji)
+
+    if 'magikarp' in message.content.lower():
+        koikingu_emoji = discord.utils.get(
+            client.emojis,
+            id=int(KOIKINGU_ID),
+        )
+        await message.add_reaction(koikingu_emoji)
+
+    if 'uncommon nothing' in message.content:
+        grrpin_emoji = discord.utils.get(client.emojis, id=int(GRRPIN_ID))
+        await message.add_reaction(grrpin_emoji)
+
+
+if __name__ == '__main__':
     client.run(TOKEN)
