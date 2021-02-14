@@ -1,0 +1,36 @@
+# config.toml
+
+# Bot token
+DISCORD_TOKEN='atokenrandomlygeneratedbydiscord'
+
+
+# Pokemon bot stuff
+MUDAE='Mudae#0807'
+POKEMON_CHANNEL='pokemon'
+
+
+# Emoji stuff
+PSYDUCK_ID=751143555904307310
+KOIKINGU_ID=481411448862670851
+GRRPIN_ID=750840460192514068
+BLURRYCOP_ID=781922598485098546
+
+
+#Language stuff
+LANG_CHANS = [
+  'chit-chat-in-love-and-joy',
+  'charla-en-amor-y-alegria',
+  'diskussion-in-liebe-und-freude',
+  'worldwide-shitpostingue',
+]
+
+
+# Capitals stuff
+VIPS=[
+  'VIP#7777',
+  ]
+CAPS_CHAN='spicy-capitals'
+
+
+# Presentation stuff
+PRES_CHAN='présentations'
