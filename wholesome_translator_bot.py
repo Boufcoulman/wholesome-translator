@@ -3,6 +3,7 @@ import asyncio
 import logging
 import os
 import re
+from urllib.parse import urlparse
 
 import discord
 import toml
@@ -128,6 +129,34 @@ async def auto_language_flag(message):
             await message.add_reaction('\U0001f6a9')
 
 
+def is_url(string: str) -> bool:
+    """Check if word should be considered to be a URL. This a simple check only.
+
+    Args:
+        string: the string to check for URL
+
+    Returns:
+        true if the word has a scheme and a domain
+    """
+    parsed = urlparse(string)
+    return parsed.scheme and parsed.netloc
+
+
+def is_lowercase(word: str) -> bool:
+    """Check if word should be considered lowercase.
+
+    Args:
+        word: the string to check for lowercase
+
+    Returns:
+        true if the word is lowercase and is not an emoji or a link
+    """
+    lowercase = word.upper() != word
+    emoji = EMOJI_RE.match(word)
+    url = is_url(word)
+    return lowercase and not emoji and not url
+
+
 async def capital_letters_cop(message):
     """React to uncapitalized messages in spicy_capitals, except for VIP people.
 
@@ -142,7 +171,7 @@ async def capital_letters_cop(message):
         return
 
     words = message.content.split()
-    min_count = sum(word.upper() != word for word in words)
+    min_count = sum(is_lowercase(word) for word in words)
     threshold = 0.25
 
     if min_count / len(words) > threshold:
