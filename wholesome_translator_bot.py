@@ -122,39 +122,14 @@ async def auto_language_flag(message):
     if EMOJI_RE.match(message.content):
         return
 
+    if is_url(message.content):
+        return
+
     if str(message.channel) in LANG_CHANS:
         # Add flag only if message not from french
         translation, src_lang = bingtranslate.translate(message.content, 'fr')
         if src_lang != 'Français':
             await message.add_reaction('\U0001f6a9')
-
-
-def is_url(string: str) -> bool:
-    """Check if word should be considered to be a URL. This a simple check only.
-
-    Args:
-        string: the string to check for URL
-
-    Returns:
-        true if the word has a scheme and a domain
-    """
-    parsed = urlparse(string)
-    return parsed.scheme and parsed.netloc
-
-
-def is_lowercase(word: str) -> bool:
-    """Check if word should be considered lowercase.
-
-    Args:
-        word: the string to check for lowercase
-
-    Returns:
-        true if the word is lowercase and is not an emoji or a link
-    """
-    lowercase = word.upper() != word
-    emoji = EMOJI_RE.match(word)
-    url = is_url(word)
-    return lowercase and not emoji and not url
 
 
 async def capital_letters_cop(message):
@@ -212,6 +187,34 @@ def get_emoji(emoji_id: int) -> discord.Emoji:
         the emoji code
     """
     return discord.utils.get(client.emojis, id=emoji_id)
+
+
+def is_url(string: str) -> bool:
+    """Check if word should be considered to be a URL. This a simple check only.
+
+    Args:
+        string: the string to check for URL
+
+    Returns:
+        true if the word has a scheme and a domain
+    """
+    parsed = urlparse(string)
+    return parsed.scheme and parsed.netloc
+
+
+def is_lowercase(word: str) -> bool:
+    """Check if word should be considered lowercase.
+
+    Args:
+        word: the string to check for lowercase
+
+    Returns:
+        true if the word is lowercase and is not an emoji or a link
+    """
+    lowercase = word.upper() != word
+    emoji = EMOJI_RE.match(word)
+    url = is_url(word)
+    return lowercase and not emoji and not url
 
 
 if __name__ == '__main__':
