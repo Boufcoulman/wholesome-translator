@@ -1,38 +1,43 @@
 """Discord bot that interacts with the Wholesome discord."""
-import logging
 import asyncio
-import toml
+import logging
 import os
+import re
 
 import discord
+import toml
 from dotenv import load_dotenv
 
 import bing
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 log.addHandler(logging.StreamHandler())
 
 load_dotenv()
 var_path = os.getenv('CONFIG_PATH')
+
+log.debug('Loading config...')
 try:
     config_vars = toml.load(var_path)
 except FileNotFoundError:
-    print("File {0} not found :(.)".format(var_path))
+    log.critical('File {0} not found :(.)'.format(var_path))
     raise
 
 TOKEN = config_vars['DISCORD_TOKEN']
 MUDAE = config_vars['MUDAE']
 POKEMON_CHANNEL = config_vars['POKEMON_CHANNEL']
-PSYDUCK_ID = config_vars['PSYDUCK_ID']
-KOIKINGU_ID = config_vars['KOIKINGU_ID']
-GRRPIN_ID = config_vars['GRRPIN_ID']
-BLURRYCOP_ID = config_vars['BLURRYCOP_ID']
+PSYDUCK_ID= int(config_vars['PSYDUCK_ID'])
+KOIKINGU_ID = int(config_vars['KOIKINGU_ID'])
+GRRPIN_ID = int(config_vars['GRRPIN_ID'])
+BLURRYCOP_ID = int(config_vars['BLURRYCOP_ID'])
 VIPS = config_vars['VIPS']
 CAPS_CHAN = config_vars['CAPS_CHAN']
 LANG_CHANS = config_vars['LANG_CHANS']
 PRES_CHAN = config_vars['PRES_CHAN']
 
 
+log.debug('Creating client...')
 client = discord.Client()
 # Define nomber of message kept in scrutation
 client.max_messages = 5000
@@ -137,11 +142,7 @@ async def capital_letters_cop(message):
     threshold = 0.25
 
     if min_count / len(words) > threshold:
-        blurry_cop_emoji = discord.utils.get(
-            client.emojis,
-            id=int(BLURRYCOP_ID),
-        )
-        await message.add_reaction(blurry_cop_emoji)
+        await message.add_reaction(get_emoji(BLURRYCOP_ID))
 
 
 async def poke_react(message):
@@ -152,27 +153,34 @@ async def poke_react(message):
     """
     channel = str(message.channel)
     author = str(message.author)
-    content = message.content
+    body = message.content
 
     # Interract with bot Muade if she spoke pokemon channel
     if author != MUDAE or channel != POKEMON_CHANNEL:
         return
 
-    if 'psyduck' in content.lower():
-        koin_emoji = discord.utils.get(client.emojis, id=int(PSYDUCK_ID))
-        await message.add_reaction(koin_emoji)
+    if 'psyduck' in body.lower():
+        await message.add_reaction(get_emoji(PSYDUCK_ID))
 
-    if 'magikarp' in content.lower():
-        koikingu_emoji = discord.utils.get(
-            client.emojis,
-            id=int(KOIKINGU_ID),
-        )
-        await message.add_reaction(koikingu_emoji)
+    if 'magikarp' in body.lower():
+        await message.add_reaction(get_emoji(KOIKINGU_ID))
 
-    if 'uncommon nothing' in content or 'maintenance' in content:
-        grrpin_emoji = discord.utils.get(client.emojis, id=int(GRRPIN_ID))
-        await message.add_reaction(grrpin_emoji)
+    if 'uncommon nothing' in body or 'maintenance' in body:
+        await message.add_reaction(get_emoji(GRRPIN_ID))
+
+
+def get_emoji(emoji_id: int) -> discord.Emoji:
+    """Get the emoji with given id.
+
+    Args:
+        emoji_id: ID of the emoji we want to fetch.
+
+    Returns:
+        the emoji code
+    """
+    return discord.utils.get(client.emojis, id=emoji_id)
 
 
 if __name__ == '__main__':
+    log.info('Starting client...')
     client.run(TOKEN)
