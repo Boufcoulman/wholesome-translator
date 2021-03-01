@@ -85,13 +85,12 @@ async def on_reaction_add(reaction, user):
         src_msg = reaction.message.content
 
         # Getting translation infos
-        translated_text = bingtranslate.translate(src_msg, 'fr')
-        src_lang = bingtranslate.language(src_msg)[0].upper()
+        translation, src_lang = bingtranslate.translate(src_msg, 'fr')
 
         # Send traduction to private message of the user reacting
         await user.create_dm()
         await user.dm_channel.send(
-            f"'{src_msg}'\ntraduit du '{src_lang}' en\n'{translated_text}'",
+            f"'{src_msg}'\ntraduit du {src_lang} en\n'{translation}'",
         )
 
 
@@ -108,13 +107,16 @@ async def hearts_on_presentation(message):
 
 
 async def auto_language_flag(message):
-    """Add the flag react in language channels.
+    """Add the flag react in language channels if the message is not french.
 
     Args:
         message: The message that was just posted on the channel
     """
     if str(message.channel) in LANG_CHANS:
-        await message.add_reaction('\U0001f6a9')
+        # Add flag only if message not from french
+        translation, src_lang = bingtranslate.translate(message.content, 'fr')
+        if src_lang != 'Français':
+            await message.add_reaction('\U0001f6a9')
 
 
 async def capital_letters_cop(message):
