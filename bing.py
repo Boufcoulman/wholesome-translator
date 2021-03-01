@@ -21,6 +21,64 @@ default_parameters = {
     'IID': 'translator.5033.3',
 }
 
+translate_table = {
+    'ar': 'Arabe',
+    'bg': 'Bulgare',
+    'ca': 'Catalan',
+    'zh-Hans': 'Chinois (simplifié)',
+    'zh-Hant': 'Chinois traditionnel',
+    'hr': 'Croate',
+    'cs': 'Tchèque',
+    'da': 'Danois',
+    'nl': 'Néerlandais',
+    'en': 'Anglais',
+    'et': 'Estonien',
+    'fi': 'Finnois',
+    'fr': 'Français',
+    'de': 'Allemand',
+    'el': 'Grec',
+    'gu': 'Goudjrati',
+    'ht': 'Créole haïtien',
+    'he': 'Hébreu',
+    'hi': 'Hindi',
+    'hu': 'Hongrois',
+    'is': 'Islandais',
+    'id': 'Indonésien',
+    'ga': 'Irlandais',
+    'it': 'Italien',
+    'ja': 'Japonais',
+    'tlh-Latn': 'Klingon',
+    'ko': 'Coréen',
+    'ku-Arab': 'Kurde (central)',
+    'lv': 'Letton',
+    'lt': 'Lituanien',
+    'ms': 'Malais',
+    'mt': 'Maltais',
+    'nb': 'Norvégien',
+    'ps': 'Pachto',
+    'fa': 'Persan',
+    'pl': 'Polonais',
+    'pt': 'Portugais',
+    'ro': 'Roumain',
+    'ru': 'Russe',
+    'sr-Cyrl': 'Serbe (cyrillique)',
+    'sr-Latn': 'Serbe (latin)',
+    'sk': 'Slovaque',
+    'sl': 'Slovène',
+    'es': 'Espagnol',
+    'sw': 'Swahili',
+    'sv': 'Suédois',
+    'ty': 'Tahitien',
+    'th': 'Thaï',
+    'tr': 'Turc',
+    'uk': 'Ukrainien',
+    'ur': 'Ourdou',
+    'vi': 'Vietnamien',
+    'cy': 'Gallois',
+    'yua': 'Yucatec Maya',
+}
+
+
 MAX_CACHE = 5000
 
 
@@ -206,6 +264,7 @@ class BingTranslate(object):
 
         Returns:
             translated text if all went well or None otherwise
+            source langage if all went well or None otherwise
         """
         if source_language is None:
             source_language = 'auto-detect'
@@ -221,8 +280,15 @@ class BingTranslate(object):
                 },
             )
         except Exception:
-            return None
+            return (None, None)
 
         if not response.ok:
-            return None
-        return json.loads(response.text)[0]['translations'][0]['text']
+            return (None, None)
+
+        src_lang = translate_table[
+            json.loads(response.text)[0]['detectedLanguage']['language']
+        ]
+        return (
+            json.loads(response.text)[0]['translations'][0]['text'],
+            src_lang,
+        )
