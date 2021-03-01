@@ -150,23 +150,24 @@ async def poke_react(message):
     """
     channel = str(message.channel)
     author = str(message.author)
+    content = message.content
 
     # Interract with bot Muade if she spoke pokemon channel
     if author != MUDAE or channel != POKEMON_CHANNEL:
         return
 
-    if 'psyduck' in message.content.lower():
+    if 'psyduck' in content.lower():
         koin_emoji = discord.utils.get(client.emojis, id=int(PSYDUCK_ID))
         await message.add_reaction(koin_emoji)
 
-    if 'magikarp' in message.content.lower():
+    if 'magikarp' in content.lower():
         koikingu_emoji = discord.utils.get(
             client.emojis,
             id=int(KOIKINGU_ID),
         )
         await message.add_reaction(koikingu_emoji)
 
-    if 'uncommon nothing' in message.content:
+    if 'uncommon nothing' in content or 'maintenance' in content:
         grrpin_emoji = discord.utils.get(client.emojis, id=int(GRRPIN_ID))
         await message.add_reaction(grrpin_emoji)
 
