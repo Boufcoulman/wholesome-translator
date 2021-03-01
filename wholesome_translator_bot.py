@@ -36,6 +36,7 @@ CAPS_CHAN = config_vars['CAPS_CHAN']
 LANG_CHANS = config_vars['LANG_CHANS']
 PRES_CHAN = config_vars['PRES_CHAN']
 
+EMOJI_RE = re.compile(r'\W*:\w+:\W*')
 
 log.debug('Creating client...')
 client = discord.Client()
@@ -117,6 +118,9 @@ async def auto_language_flag(message):
     Args:
         message: The message that was just posted on the channel
     """
+    if EMOJI_RE.match(message.content):
+        return
+
     if str(message.channel) in LANG_CHANS:
         # Add flag only if message not from french
         translation, src_lang = bingtranslate.translate(message.content, 'fr')
