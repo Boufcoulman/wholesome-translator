@@ -1,38 +1,45 @@
 """Discord bot that interacts with the Wholesome discord."""
-import logging
 import asyncio
-import toml
+import logging
 import os
+import re
+from urllib.parse import urlparse
 
 import discord
+import toml
 from dotenv import load_dotenv
 
 import bing
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 log.addHandler(logging.StreamHandler())
 
 load_dotenv()
 var_path = os.getenv('CONFIG_PATH')
+
+log.debug('Loading config...')
 try:
     config_vars = toml.load(var_path)
 except FileNotFoundError:
-    print("File {0} not found :(.)".format(var_path))
+    log.critical('File {0} not found :(.)'.format(var_path))
     raise
 
 TOKEN = config_vars['DISCORD_TOKEN']
 MUDAE = config_vars['MUDAE']
 POKEMON_CHANNEL = config_vars['POKEMON_CHANNEL']
-PSYDUCK_ID = config_vars['PSYDUCK_ID']
-KOIKINGU_ID = config_vars['KOIKINGU_ID']
-GRRPIN_ID = config_vars['GRRPIN_ID']
-BLURRYCOP_ID = config_vars['BLURRYCOP_ID']
+PSYDUCK_ID= int(config_vars['PSYDUCK_ID'])
+KOIKINGU_ID = int(config_vars['KOIKINGU_ID'])
+GRRPIN_ID = int(config_vars['GRRPIN_ID'])
+BLURRYCOP_ID = int(config_vars['BLURRYCOP_ID'])
 VIPS = config_vars['VIPS']
 CAPS_CHAN = config_vars['CAPS_CHAN']
 LANG_CHANS = config_vars['LANG_CHANS']
 PRES_CHAN = config_vars['PRES_CHAN']
 
+EMOJI_RE = re.compile(r'\W*:\w+:\W*')
 
+log.debug('Creating client...')
 client = discord.Client()
 # Define nomber of message kept in scrutation
 client.max_messages = 5000
@@ -112,6 +119,12 @@ async def auto_language_flag(message):
     Args:
         message: The message that was just posted on the channel
     """
+    if EMOJI_RE.match(message.content):
+        return
+
+    if is_url(message.content):
+        return
+
     if str(message.channel) in LANG_CHANS:
         # Add flag only if message not from french
         translation, src_lang = bingtranslate.translate(message.content, 'fr')
@@ -133,15 +146,11 @@ async def capital_letters_cop(message):
         return
 
     words = message.content.split()
-    min_count = sum(word.upper() != word for word in words)
+    min_count = sum(is_lowercase(word) for word in words)
     threshold = 0.25
 
     if min_count / len(words) > threshold:
-        blurry_cop_emoji = discord.utils.get(
-            client.emojis,
-            id=int(BLURRYCOP_ID),
-        )
-        await message.add_reaction(blurry_cop_emoji)
+        await message.add_reaction(get_emoji(BLURRYCOP_ID))
 
 
 async def poke_react(message):
@@ -152,27 +161,62 @@ async def poke_react(message):
     """
     channel = str(message.channel)
     author = str(message.author)
-    content = message.content
+    body = message.content
 
     # Interract with bot Muade if she spoke pokemon channel
     if author != MUDAE or channel != POKEMON_CHANNEL:
         return
 
-    if 'psyduck' in content.lower():
-        koin_emoji = discord.utils.get(client.emojis, id=int(PSYDUCK_ID))
-        await message.add_reaction(koin_emoji)
+    if 'psyduck' in body.lower():
+        await message.add_reaction(get_emoji(PSYDUCK_ID))
 
-    if 'magikarp' in content.lower():
-        koikingu_emoji = discord.utils.get(
-            client.emojis,
-            id=int(KOIKINGU_ID),
-        )
-        await message.add_reaction(koikingu_emoji)
+    if 'magikarp' in body.lower():
+        await message.add_reaction(get_emoji(KOIKINGU_ID))
 
-    if 'uncommon nothing' in content or 'maintenance' in content:
-        grrpin_emoji = discord.utils.get(client.emojis, id=int(GRRPIN_ID))
-        await message.add_reaction(grrpin_emoji)
+    if 'uncommon nothing' in body or 'maintenance' in body:
+        await message.add_reaction(get_emoji(GRRPIN_ID))
+
+
+def get_emoji(emoji_id: int) -> discord.Emoji:
+    """Get the emoji with given id.
+
+    Args:
+        emoji_id: ID of the emoji we want to fetch.
+
+    Returns:
+        the emoji code
+    """
+    return discord.utils.get(client.emojis, id=emoji_id)
+
+
+def is_url(string: str) -> bool:
+    """Check if word should be considered to be a URL. This a simple check only.
+
+    Args:
+        string: the string to check for URL
+
+    Returns:
+        true if the word has a scheme and a domain
+    """
+    parsed = urlparse(string)
+    return parsed.scheme and parsed.netloc
+
+
+def is_lowercase(word: str) -> bool:
+    """Check if word should be considered lowercase.
+
+    Args:
+        word: the string to check for lowercase
+
+    Returns:
+        true if the word is lowercase and is not an emoji or a link
+    """
+    lowercase = word.upper() != word
+    emoji = EMOJI_RE.match(word)
+    url = is_url(word)
+    return lowercase and not emoji and not url
 
 
 if __name__ == '__main__':
+    log.info('Starting client...')
     client.run(TOKEN)
