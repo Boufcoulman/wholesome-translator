@@ -29,7 +29,7 @@ LANG_CHANS = [
 
 # Capitals stuff
 VIPS=[
-  'VIP#7777',
+  112233445566778899,
   ]
 CAPS_CHAN='spicy-capitals'
 

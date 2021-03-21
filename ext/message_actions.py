@@ -75,13 +75,16 @@ async def auto_language_flag(message):
     Args:
         message: The message that was just posted on the channel
     """
-    if EMOJI_RE.match(message.content):
-        return
-
-    if is_url(message.content):
-        return
-
     if str(message.channel) in LANG_CHANS:
+
+        if EMOJI_RE.match(message.content):
+            return
+
+        # Check if there is an url in the phrase
+        words = message.content.split()
+        if any(is_url(word) for word in words):
+            return
+
         # Add flag only if message not from french
         translation, src_lang = bingtranslate.translate(message.content, 'fr')
         if src_lang != 'Français':
@@ -98,7 +101,14 @@ async def capital_letters_cop(message, bot):
         message: The message that was just posted on the channel
 
     """
-    if str(message.channel) != CAPS_CHAN or str(message.author) in VIPS:
+    if str(message.channel) != CAPS_CHAN:
+        return
+
+    if 'bisous' in message.content.lower():
+        await message.add_reaction('❤️')
+        return
+
+    if message.author.id in VIPS:
         return
 
     words = message.content.split()
