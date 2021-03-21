@@ -18,5 +18,19 @@ except FileNotFoundError:
     raise
 
 
-def get_var(var: str):
-    return config_vars[var]
+def get_var(var: str, default=None):
+    """Return configuration variable.
+
+    Args:
+        var: The name of the value to retrieve from the configuration file
+        default: The value to be returned if the value var doesn't exist in the
+        configuration file
+    """
+    if var in config_vars:
+        return config_vars[var]
+    else:
+        return default
+
+
+if __name__ == "__main__":
+    print(get_var("CMD_PREFIX", "non"))

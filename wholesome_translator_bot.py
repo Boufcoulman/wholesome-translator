@@ -12,10 +12,11 @@ log.setLevel(logging.DEBUG)
 log.addHandler(logging.StreamHandler())
 
 TOKEN = get_var('DISCORD_TOKEN')
+CMD_PREFIX = get_var('CMD_PREFIX', '%')
 
 
 log.debug('Creating bot...')
-bot = commands.Bot(command_prefix='%')
+bot = commands.Bot(command_prefix=CMD_PREFIX)
 
 # Commands extensions
 initial_extensions = [

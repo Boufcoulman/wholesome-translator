@@ -3,6 +3,8 @@
 # Bot token
 DISCORD_TOKEN='atokenrandomlygeneratedbydiscord'
 
+# Bot command prefix
+CMD_PREFIX='%'
 
 # Pokemon bot stuff
 MUDAE='Mudae#0807'

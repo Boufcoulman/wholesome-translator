@@ -40,6 +40,10 @@ class MessagesCog(commands.Cog, name="Bot messages actions"):
         if message.author == self.bot.user:
             return
 
+        # Keep the bot from treating commands
+        if message.content.startswith(self.bot.command_prefix):
+            return
+
         # Handle the calls of on_message actions
         await asyncio.wait([
             poke_react(message, self.bot),
