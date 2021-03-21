@@ -101,7 +101,14 @@ async def capital_letters_cop(message, bot):
         message: The message that was just posted on the channel
 
     """
-    if str(message.channel) != CAPS_CHAN or message.author.id in VIPS:
+    if str(message.channel) != CAPS_CHAN:
+        return
+
+    if 'bisous' in message.content.lower():
+        await message.add_reaction('❤️')
+        return
+
+    if message.author.id in VIPS:
         return
 
     words = message.content.split()
