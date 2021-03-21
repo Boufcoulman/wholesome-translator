@@ -43,4 +43,4 @@ async def on_ready():
 
 if __name__ == '__main__':
     log.info('Starting bot...')
-    bot.run(TOKEN)
+    bot.run(TOKEN, reconnect=True)
