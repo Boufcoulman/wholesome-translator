@@ -5,6 +5,7 @@ import asyncio
 from lib.load_var import get_var
 import re
 from urllib.parse import urlparse
+import random
 
 
 MUDAE = get_var('MUDAE')
@@ -13,6 +14,8 @@ PSYDUCK_ID = get_var('PSYDUCK_ID')
 KOIKINGU_ID = get_var('KOIKINGU_ID')
 GRRPIN_ID = get_var('GRRPIN_ID')
 BLURRYCOP_ID = get_var('BLURRYCOP_ID')
+LOVE_ID = get_var('LOVE_ID')
+GHOSTHUG_ID = get_var('GHOSTHUG_ID')
 VIPS = get_var('VIPS')
 CAPS_CHAN = get_var('CAPS_CHAN')
 LANG_CHANS = get_var('LANG_CHANS')
@@ -40,7 +43,7 @@ class MessagesCog(commands.Cog, name="Bot messages actions"):
         if message.author == self.bot.user:
             return
 
-        # Keep the bot from treating commands
+        # Keep the bot from treating commands, might be useless
         if message.content.startswith(self.bot.command_prefix):
             return
 
@@ -50,6 +53,7 @@ class MessagesCog(commands.Cog, name="Bot messages actions"):
             auto_language_flag(message),
             capital_letters_cop(message, self.bot),
             hearts_on_presentation(message),
+            hearts_on_bisou(message, self.bot),
         ])
 
 
@@ -99,13 +103,11 @@ async def capital_letters_cop(message, bot):
 
     Args:
         message: The message that was just posted on the channel
-
     """
     if str(message.channel) != CAPS_CHAN:
         return
 
-    if 'bisous' in message.content.lower():
-        await message.add_reaction('❤️')
+    if 'bisou' in message.content.lower():
         return
 
     if message.author.id in VIPS:
@@ -117,6 +119,22 @@ async def capital_letters_cop(message, bot):
 
     if min_count / len(words) > threshold:
         await message.add_reaction(get_emoji(BLURRYCOP_ID, bot))
+
+
+async def hearts_on_bisou(message, bot):
+    """React to messages containing "bisou" with full of hearts emojis.
+
+    Args:
+        message: The message that was just posted on the channel
+    """
+    if 'bisou' in message.content.lower():
+        bisous = random.sample(['🧡', '💛', '💚', '💙', '💜', '🖤', '🤎',
+                                '🤍', '💕', '💞', '💓', '💗', '💖', '♥️',
+                                get_emoji(LOVE_ID, bot),
+                                get_emoji(GHOSTHUG_ID, bot)],
+                               3)
+        for bisou in bisous:
+            await message.add_reaction(bisou)
 
 
 async def poke_react(message, bot):
