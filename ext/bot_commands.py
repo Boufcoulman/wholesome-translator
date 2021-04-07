@@ -3,6 +3,8 @@ import json
 import discord
 from discord.ext import commands
 import lib.bing as bing
+from functools import reduce
+from operator import add
 
 
 bingtranslate = bing.BingTranslate()
@@ -32,15 +34,24 @@ class CommandsCog(commands.Cog, name="Bot commands"):
 
     @commands.command()
     async def inspire(self, ctx) -> None:
-        """Send inspiring quote.
-
-        Args:
-            message: The message that was just posted
+        """Send inspiring quote ☄️
         """
         response = requests.get("https://zenquotes.io/api/random")
         json_data = json.loads(response.text)
         quote = json_data[0]['q'] + " -" + json_data[0]['a']
         await ctx.send(quote)
+
+    @commands.command()
+    async def language(self, ctx) -> None:
+        """Send list of language alias for "translate" command.
+        """
+        returned_table = []
+        for code, lang in bing.translate_table.items():
+            returned_table.append(f'{lang} : {code}\n')
+
+        returned_table.sort()
+        returned_message = reduce(add, returned_table)
+        await ctx.author.send(returned_message)
 
 
 def setup(bot):
@@ -48,38 +59,20 @@ def setup(bot):
 
 
 async def get_translated(message: discord.message) -> None:
-    """Send translation to wanted langage.
+    """Send translation to wanted language.
 
     Args:
         message: The message that was just posted
-        $translate target_langage content
+        $translate target_language content
     """
     pass
 
 
 def translator(message: discord.message) -> str:
-    """Translate content to target langage and return the translation.
+    """Translate content to target language and return the translation.
 
     Args:
         message: The message that was just posted
-        $translate target_langage content
+        $translate target_language content
     """
     pass
-
-
-# async def command(message: discord.message) -> None:
-#     """Handle several commands.
-#
-#     Args:
-#         message: The message that was just posted
-#     """
-#     commands = {
-#         '$inspire': inspire,
-#         '$translate': translator,
-#         # '$langage': get_langage_codes,
-#     }
-#
-#     # If command starts with one of specified commands, execute it
-#     for command, action in commands.items():
-#         if message.content.startswith(command):
-#             await action(message)
