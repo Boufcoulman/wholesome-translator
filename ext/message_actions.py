@@ -57,10 +57,6 @@ class MessagesCog(commands.Cog, name="Bot messages actions"):
         ])
 
 
-def setup(bot):
-    bot.add_cog(MessagesCog(bot))
-
-
 async def hearts_on_presentation(message):
     """Add heart reactions in presentation channel.
 
@@ -103,6 +99,7 @@ async def capital_letters_cop(message, bot):
 
     Args:
         message: The message that was just posted on the channel
+        bot: the bot
     """
     if str(message.channel) != CAPS_CHAN:
         return
@@ -126,6 +123,7 @@ async def hearts_on_bisou(message, bot):
 
     Args:
         message: The message that was just posted on the channel
+        bot: the bot
     """
     if 'bisou' in message.content.lower():
         bisous = random.sample(['🧡', '💛', '💚', '💙', '💜', '🖤', '🤎',
@@ -142,6 +140,7 @@ async def poke_react(message, bot):
 
     Args:
         message: The message that was just posted on the channel
+        bot: the bot
     """
     channel = str(message.channel)
     author = str(message.author)
@@ -199,3 +198,9 @@ def is_lowercase(word: str) -> bool:
     emoji = EMOJI_RE.match(word)
     url = is_url(word)
     return lowercase and not emoji and not url
+
+
+def setup(bot):
+    """Function run by the bot.load_extension() call from main file
+    """
+    bot.add_cog(MessagesCog(bot))
