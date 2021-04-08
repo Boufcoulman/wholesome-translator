@@ -264,7 +264,7 @@ class BingTranslate(object):
 
         Returns:
             translated text if all went well or None otherwise
-            source langage if all went well or None otherwise
+            source language if all went well or None otherwise
         """
         if source_language is None:
             source_language = 'auto-detect'
