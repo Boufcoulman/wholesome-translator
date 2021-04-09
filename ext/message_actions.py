@@ -53,7 +53,7 @@ class MessagesCog(commands.Cog, name="Bot messages actions"):
             capital_letters_cop,
             hearts_on_presentation,
             hearts_on_bisou,
-            hearts_on_jtm,
+            # hearts_on_jtm,
         ]
         await asyncio.wait(
             [handler(message, self.bot) for handler in on_message_handlers]
