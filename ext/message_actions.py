@@ -16,6 +16,9 @@ GRRPIN_ID = get_var('GRRPIN_ID')
 BLURRYCOP_ID = get_var('BLURRYCOP_ID')
 LOVE_ID = get_var('LOVE_ID')
 GHOSTHUG_ID = get_var('GHOSTHUG_ID')
+KOIDUCK_ID = get_var('KOIDUCK_ID')
+PSYKORGASM_ID = get_var('PSYKORGASM_ID')
+BLUSH2_ID = get_var('BLUSH2_ID')
 VIPS = get_var('VIPS')
 CAPS_CHAN = get_var('CAPS_CHAN')
 LANG_CHANS = get_var('LANG_CHANS')
@@ -39,41 +42,46 @@ class MessagesCog(commands.Cog, name="Bot messages actions"):
         Args:
             message: The message that was just posted on the channel
         """
-        # Keep the bot from triggering himself
-        if message.author == self.bot.user:
-            return
-
         # Keep the bot from treating commands, might be useless
         if message.content.startswith(self.bot.command_prefix):
             return
 
         # Handle the calls of on_message actions
-        await asyncio.wait([
-            poke_react(message, self.bot),
-            auto_language_flag(message),
-            capital_letters_cop(message, self.bot),
-            hearts_on_presentation(message),
-            hearts_on_bisou(message, self.bot),
-        ])
+        on_message_handlers = [
+            auto_language_flag,
+            poke_react,
+            capital_letters_cop,
+            hearts_on_presentation,
+            hearts_on_bisou,
+            hearts_on_jtm,
+        ]
+        await asyncio.wait(
+            [handler(message, self.bot) for handler in on_message_handlers]
+        )
 
 
-async def hearts_on_presentation(message):
+async def hearts_on_presentation(message, bot):
     """Add heart reactions in presentation channel.
 
     Args:
         message: The message that was just posted on the channel
     """
+    # Keep the bot from triggering himself
+    if message.author == bot.user:
+        return
+
     if str(message.channel) == str(PRES_CHAN):
         hearts = ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤎', '🤍']
         for heart in hearts:
             await message.add_reaction(heart)
 
 
-async def auto_language_flag(message):
+async def auto_language_flag(message, bot):
     """Add the flag react in language channels if the message is not french.
 
     Args:
         message: The message that was just posted on the channel
+        bot: the bot
     """
     if str(message.channel) in LANG_CHANS:
 
@@ -101,6 +109,10 @@ async def capital_letters_cop(message, bot):
         message: The message that was just posted on the channel
         bot: the bot
     """
+    # Keep the bot from triggering himself
+    if message.author == bot.user:
+        return
+
     if str(message.channel) != CAPS_CHAN:
         return
 
@@ -125,14 +137,32 @@ async def hearts_on_bisou(message, bot):
         message: The message that was just posted on the channel
         bot: the bot
     """
+    # Keep the bot from triggering himself
+    if message.author == bot.user:
+        return
+
     if 'bisou' in message.content.lower():
-        bisous = random.sample(['🧡', '💛', '💚', '💙', '💜', '🖤', '🤎',
-                                '🤍', '💕', '💞', '💓', '💗', '💖', '♥️',
-                                get_emoji(LOVE_ID, bot),
-                                get_emoji(GHOSTHUG_ID, bot)],
-                               3)
+        bisous = random.sample(bisous_pool(bot), 3)
         for bisou in bisous:
             await message.add_reaction(bisou)
+
+
+async def hearts_on_jtm(message, bot):
+    """React to messages containing 'i love you' like sentences with emojis.
+
+    Args:
+        message: The message that was just posted on the channel
+        bot: the bot
+    """
+    # Keep the bot from triggering himself
+    if message.author == bot.user:
+        return
+
+    love_phrases = ["je t'aime", "jtm", "je vous aime"]
+    if any(phrase in message.content.lower() for phrase in love_phrases):
+        await asyncio.wait(
+            [message.add_reaction(bisous) for bisous in bisous_pool(bot)]
+        )
 
 
 async def poke_react(message, bot):
@@ -142,6 +172,10 @@ async def poke_react(message, bot):
         message: The message that was just posted on the channel
         bot: the bot
     """
+    # Keep the bot from triggering himself
+    if message.author == bot.user:
+        return
+
     channel = str(message.channel)
     author = str(message.author)
     body = message.content
@@ -198,6 +232,24 @@ def is_lowercase(word: str) -> bool:
     emoji = EMOJI_RE.match(word)
     url = is_url(word)
     return lowercase and not emoji and not url
+
+
+def bisous_pool(bot: commands.bot.Bot) -> list:
+    """Return the bisous pool of emojis
+
+    Args:
+        bot: the bot
+
+    Returns:
+        list of kiss emojis
+    """
+    bisous = ['🧡', '💛', '💚', '💙', '💜', '🖤', '🤎',
+              '🤍', '💕', '💞', '💓', '💗', '💖', '♥️',
+              get_emoji(LOVE_ID, bot), get_emoji(KOIDUCK_ID, bot),
+              get_emoji(GHOSTHUG_ID, bot), get_emoji(PSYKORGASM_ID, bot),
+              get_emoji(BLUSH2_ID, bot)]
+
+    return bisous
 
 
 def setup(bot):
