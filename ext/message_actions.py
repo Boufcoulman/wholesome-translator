@@ -7,9 +7,13 @@ import re
 from urllib.parse import urlparse
 import random
 
-
-MUDAE = get_var('MUDAE')
+# Channels
 POKEMON_CHANNEL = get_var('POKEMON_CHANNEL')
+CAPS_CHAN = get_var('CAPS_CHAN')
+LANG_CHANS = get_var('LANG_CHANS')
+PRES_CHAN = get_var('PRES_CHAN')
+
+# Emojis
 PSYDUCK_ID = get_var('PSYDUCK_ID')
 KOIKINGU_ID = get_var('KOIKINGU_ID')
 GRRPIN_ID = get_var('GRRPIN_ID')
@@ -19,10 +23,11 @@ GHOSTHUG_ID = get_var('GHOSTHUG_ID')
 KOIDUCK_ID = get_var('KOIDUCK_ID')
 PSYKORGASM_ID = get_var('PSYKORGASM_ID')
 BLUSH2_ID = get_var('BLUSH2_ID')
+BISOU_ID = get_var('BISOU_ID')
+
+# Users
 VIPS = get_var('VIPS')
-CAPS_CHAN = get_var('CAPS_CHAN')
-LANG_CHANS = get_var('LANG_CHANS')
-PRES_CHAN = get_var('PRES_CHAN')
+MUDAE = get_var('MUDAE')
 
 EMOJI_RE = re.compile(r'\W*:\w+:\W*')
 
@@ -247,7 +252,7 @@ def bisous_pool(bot: commands.bot.Bot) -> list:
               '🤍', '💕', '💞', '💓', '💗', '💖', '♥️',
               get_emoji(LOVE_ID, bot), get_emoji(KOIDUCK_ID, bot),
               get_emoji(GHOSTHUG_ID, bot), get_emoji(PSYKORGASM_ID, bot),
-              get_emoji(BLUSH2_ID, bot)]
+              get_emoji(BLUSH2_ID, bot), get_emoji(BISOU_ID, bot)]
 
     return bisous
 
