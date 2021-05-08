@@ -14,16 +14,7 @@ LANG_CHANS = get_var('LANG_CHANS')
 PRES_CHAN = get_var('PRES_CHAN')
 
 # Emojis
-PSYDUCK_ID = get_var('PSYDUCK_ID')
-KOIKINGU_ID = get_var('KOIKINGU_ID')
-GRRPIN_ID = get_var('GRRPIN_ID')
-BLURRYCOP_ID = get_var('BLURRYCOP_ID')
-LOVE_ID = get_var('LOVE_ID')
-GHOSTHUG_ID = get_var('GHOSTHUG_ID')
-KOIDUCK_ID = get_var('KOIDUCK_ID')
-PSYKORGASM_ID = get_var('PSYKORGASM_ID')
-BLUSH2_ID = get_var('BLUSH2_ID')
-BISOU_ID = get_var('BISOU_ID')
+emoji_IDs = get_var('emoji_IDs')
 
 # Users
 VIPS = get_var('VIPS')
@@ -132,7 +123,7 @@ async def capital_letters_cop(message, bot):
     threshold = 0.25
 
     if min_count / len(words) > threshold:
-        await message.add_reaction(get_emoji(BLURRYCOP_ID, bot))
+        await message.add_reaction(get_emoji(emoji_IDs['BLURRYCOP_ID'], bot))
 
 
 async def hearts_on_bisou(message, bot):
@@ -190,13 +181,16 @@ async def poke_react(message, bot):
         return
 
     if 'psyduck' in body.lower():
-        await message.add_reaction(get_emoji(PSYDUCK_ID, bot))
+        await message.add_reaction(get_emoji(emoji_IDs['PSYDUCK_ID'], bot))
 
     if 'magikarp' in body.lower():
-        await message.add_reaction(get_emoji(KOIKINGU_ID, bot))
+        await message.add_reaction(get_emoji(emoji_IDs['KOIKINGU_ID'], bot))
 
     if 'uncommon nothing' in body or 'maintenance' in body:
-        await message.add_reaction(get_emoji(GRRPIN_ID, bot))
+        await message.add_reaction(get_emoji(emoji_IDs['GRRPIN_ID'], bot))
+
+    if 'pikachu' in body.lower():
+        await message.add_reaction(get_emoji(emoji_IDs['PIKAWOW_ID'], bot))
 
 
 def get_emoji(emoji_id: int, bot: commands.bot.Bot) -> discord.Emoji:
@@ -250,9 +244,12 @@ def bisous_pool(bot: commands.bot.Bot) -> list:
     """
     bisous = ['🧡', '💛', '💚', '💙', '💜', '🖤', '🤎',
               '🤍', '💕', '💞', '💓', '💗', '💖', '♥️',
-              get_emoji(LOVE_ID, bot), get_emoji(KOIDUCK_ID, bot),
-              get_emoji(GHOSTHUG_ID, bot), get_emoji(PSYKORGASM_ID, bot),
-              get_emoji(BLUSH2_ID, bot), get_emoji(BISOU_ID, bot)]
+              get_emoji(emoji_IDs['LOVE_ID'], bot),
+              get_emoji(emoji_IDs['KOIDUCK_ID'], bot),
+              get_emoji(emoji_IDs['GHOSTHUG_ID'], bot),
+              get_emoji(emoji_IDs['PSYKORGASM_ID'], bot),
+              get_emoji(emoji_IDs['BLUSH2_ID'], bot),
+              get_emoji(emoji_IDs['BISOU_ID'], bot)]
 
     return bisous
 
