@@ -189,6 +189,9 @@ async def poke_react(message, bot):
     if 'uncommon nothing' in body or 'maintenance' in body:
         await message.add_reaction(get_emoji(emoji_IDs['GRRPIN_ID'], bot))
 
+    if 'pikachu' in body.lower():
+        await message.add_reaction(get_emoji(emoji_IDs['PIKAWOW_ID'], bot))
+
 
 def get_emoji(emoji_id: int, bot: commands.bot.Bot) -> discord.Emoji:
     """Get the emoji with given id.
