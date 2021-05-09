@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 # Another Type: forking
 WorkingDirectory=/home/ubuntu/wholesome-translator
-ExecStart=/home/ubuntu/.virtualenvs/wholesome-translator-fsrheil2/bin/python /home/ubuntu/wholesome-translator.py
+ExecStart=/home/ubuntu/.virtualenvs/wholesome-translator-fsrheil2/bin/python /home/ubuntu/wholesome-translator/wholesome_translator_bot.py
 Restart=on-failure
 # Other restart options: always, on-abort, etc
 

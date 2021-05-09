@@ -23,4 +23,4 @@ To make it work :
 - create the ".env" file with the absolute path to the "config.toml" file in this folder.
 
 To go further :
-- you can use the wholesome_bot.service in order to make it run as a daemon : As root, copy the file to /etc/systemd/system/wholesome_bot.service. Then change the paths of the "WorkingDirectory" and "ExecStart" lines in order to match your installation. Finally run `sudo systemctl start wholesome_bot.service` to make it pop.
+- you can use the wholesome_bot.service in order to make it run as a daemon : As root, copy the file to /etc/systemd/system/wholesome_bot.service. Then change the paths of the "WorkingDirectory" and "ExecStart" lines in order to match your installation. Finally run `sudo systemctl start wholesome_bot.service` to make it pop. You can run `sudo systemctl enable wholesome_bot.service` to make it start with the device its running on.
