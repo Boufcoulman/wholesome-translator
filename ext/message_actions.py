@@ -61,6 +61,7 @@ async def hearts_on_presentation(message, bot):
 
     Args:
         message: The message that was just posted on the channel
+        bot: The bot
     """
     # Keep the bot from triggering himself
     if message.author == bot.user:
@@ -77,7 +78,7 @@ async def auto_language_flag(message, bot):
 
     Args:
         message: The message that was just posted on the channel
-        bot: the bot
+        bot: The bot
     """
     if str(message.channel) in LANG_CHANS:
 
@@ -103,7 +104,7 @@ async def capital_letters_cop(message, bot):
 
     Args:
         message: The message that was just posted on the channel
-        bot: the bot
+        bot: The bot
     """
     # Keep the bot from triggering himself
     if message.author == bot.user:
@@ -131,7 +132,7 @@ async def hearts_on_bisou(message, bot):
 
     Args:
         message: The message that was just posted on the channel
-        bot: the bot
+        bot: The bot
     """
     # Keep the bot from triggering himself
     if message.author == bot.user:
@@ -148,7 +149,7 @@ async def hearts_on_jtm(message, bot):
 
     Args:
         message: The message that was just posted on the channel
-        bot: the bot
+        bot: The bot
     """
     # Keep the bot from triggering himself
     if message.author == bot.user:
@@ -166,7 +167,7 @@ async def poke_react(message, bot):
 
     Args:
         message: The message that was just posted on the channel
-        bot: the bot
+        bot: The bot
     """
     # Keep the bot from triggering himself
     if message.author == bot.user:
@@ -174,23 +175,35 @@ async def poke_react(message, bot):
 
     channel = str(message.channel)
     author = str(message.author)
-    body = message.content
 
     # Interract with bot Muade if she spoke pokemon channel
     if author != MUDAE or channel != POKEMON_CHANNEL:
         return
 
-    if 'psyduck' in body.lower():
-        await message.add_reaction(get_emoji(emoji_IDs['PSYDUCK_ID'], bot))
+    reaction_triggers = {
+        'psyduck': 'PSYDUCK_ID',
+        'magikarp': 'KOIKINGU_ID',
+        'uncommon nothing': 'GRRPIN_ID',
+        'maintenance': 'GRRPIN_ID',
+        'pikachu': 'PIKAWOW_ID',
+        'butterfree': 'BRETAGNE_ID'
+    }
 
-    if 'magikarp' in body.lower():
-        await message.add_reaction(get_emoji(emoji_IDs['KOIKINGU_ID'], bot))
+    for word, emoji_name in reaction_triggers.items():
+        await poke_case(word, emoji_name, message, bot)
 
-    if 'uncommon nothing' in body or 'maintenance' in body:
-        await message.add_reaction(get_emoji(emoji_IDs['GRRPIN_ID'], bot))
 
-    if 'pikachu' in body.lower():
-        await message.add_reaction(get_emoji(emoji_IDs['PIKAWOW_ID'], bot))
+async def poke_case(word, emoji_name, message, bot):
+    """Test if word is in message. If so add reaction identified by emoji_name.
+
+    Args:
+        words: The words to test
+        emoji_name: The name of the emoji_id of the emoji we want to add.
+        message: The message that was just posted on the channel
+        bot: The bot
+    """
+    if word in message.content.lower():
+        await message.add_reaction(get_emoji(emoji_IDs[emoji_name], bot))
 
 
 def get_emoji(emoji_id: int, bot: commands.bot.Bot) -> discord.Emoji:
@@ -237,7 +250,7 @@ def bisous_pool(bot: commands.bot.Bot) -> list:
     """Return the bisous pool of emojis
 
     Args:
-        bot: the bot
+        bot: The bot
 
     Returns:
         list of kiss emojis
@@ -255,6 +268,6 @@ def bisous_pool(bot: commands.bot.Bot) -> list:
 
 
 def setup(bot):
-    """Function run by the bot.load_extension() call from main file
+    """Function run by The bot.load_extension() call from main file
     """
     bot.add_cog(MessagesCog(bot))
