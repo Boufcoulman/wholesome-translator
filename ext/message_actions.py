@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import lib.bing as bing
+import lib.gtranslate as gtranslate
 import asyncio
 from lib.load_var import get_var
 import re
@@ -21,8 +21,6 @@ VIPS = get_var('VIPS')
 MUDAE = get_var('MUDAE')
 
 EMOJI_RE = re.compile(r'\W*:\w+:\W*')
-
-bingtranslate = bing.BingTranslate()
 
 
 class MessagesCog(commands.Cog, name="Bot messages actions"):
@@ -91,7 +89,7 @@ async def auto_language_flag(message, bot):
             return
 
         # Add flag only if message not from french
-        translation, src_lang = bingtranslate.translate(message.content, 'fr')
+        translation, src_lang = gtranslate.translate(message.content, 'fr')
         if src_lang != 'Français':
             await message.add_reaction('\U0001f6a9')
 

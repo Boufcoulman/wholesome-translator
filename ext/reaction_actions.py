@@ -1,9 +1,6 @@
-import lib.bing as bing
+import lib.gtranslate as gtranslate
 from discord.ext import commands
 import asyncio
-
-
-bingtranslate = bing.BingTranslate()
 
 
 class ReactionsCog(commands.Cog, name="Bot reactions actions"):
@@ -43,7 +40,7 @@ async def translate_on_flag(payload, bot):
         src_msg = message.content
 
         # Getting translation infos
-        translation, src_lang = bingtranslate.translate(src_msg, 'fr')
+        translation, src_lang = gtranslate.translate(src_msg, 'fr')
 
         # Send traduction to private message of the user reacting
         user = await bot.fetch_user(payload.user_id)
