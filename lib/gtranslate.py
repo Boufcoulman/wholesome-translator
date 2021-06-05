@@ -139,12 +139,16 @@ def translate(text, dest_lang, src_lang=None):
         src_lang = 'auto'
 
     base_url = 'https://translate.googleapis.com/translate_a/single'
-    default_params = '?client=gtx&dt=t'
-    params = default_params + '&sl=' + src_lang + '&tl=' + dest_lang
-    full_url = base_url + params + '&q=' + text
+    params = {
+        'client': 'gtx',
+        'dt': 't',
+        'sl': src_lang,
+        'tl': dest_lang,
+        'q': text,
+    }
 
     try:
-        response = get(full_url)
+        response = get(url=base_url, params=params)
     except Exception:
         return None
 
