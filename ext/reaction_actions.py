@@ -1,4 +1,4 @@
-import lib.gtranslate as gtranslate
+import lib.gtranslate as translate
 from discord.ext import commands
 import asyncio
 
@@ -40,7 +40,7 @@ async def translate_on_flag(payload, bot):
         src_msg = message.content
 
         # Getting translation infos
-        translation, src_lang = gtranslate.translate(src_msg, 'fr')
+        translation, src_lang = translate.translate(src_msg, 'fr')
 
         # Send traduction to private message of the user reacting
         user = await bot.fetch_user(payload.user_id)

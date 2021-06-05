@@ -1,7 +1,7 @@
 import requests
 import json
 from discord.ext import commands
-import lib.gtranslate as gtranslate
+import lib.gtranslate as translate
 from functools import reduce
 from operator import add
 import discord
@@ -120,14 +120,14 @@ class CommandsCog(commands.Cog, name="Bot commands"):
         response = requests.get("https://zenquotes.io/api/random")
         json_data = json.loads(response.text)
         quote = json_data[0]['q'] + " -" + json_data[0]['a']
-        await ctx.send(quote + "\n" + gtranslate.translate(quote, 'fr')[0])
+        await ctx.send(quote + "\n" + translate.translate(quote, 'fr')[0])
 
     @commands.command()
     async def language(self, ctx) -> None:
         """Send list of language aliases for "translate" command 🏳️‍🌈
         """
         returned_table = []
-        for code, lang in gtranslate.translate_table.items():
+        for code, lang in translate.translate_table.items():
             returned_table.append(f'{lang} : {code}\n')
 
         returned_table.sort()
@@ -143,11 +143,11 @@ class CommandsCog(commands.Cog, name="Bot commands"):
             message: the message to translate
         """
         # Stop if bad language code
-        if lang not in gtranslate.translate_table:
+        if lang not in translate.translate_table:
             await ctx.author.send(
-                f'`{lang}` n\'est pas un code valide.\n'
-                f'Veuillez lancer la commande `{self.bot.command_prefix}'
-                'language` pour obtenir les codes de langage.'
+                f"`{lang}` n'est pas un code valide.\n"
+                f"Veuillez lancer la commande `{self.bot.command_prefix}"
+                "language` pour obtenir les codes de langage."
             )
             return
 
@@ -159,7 +159,7 @@ class CommandsCog(commands.Cog, name="Bot commands"):
             return
 
         to_translate = ' '.join(message)
-        translation = gtranslate.translate(to_translate, lang)[0]
+        translation = translate.translate(to_translate, lang)[0]
         await ctx.send(translation)
 
     @translate.error

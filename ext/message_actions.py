@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import lib.gtranslate as gtranslate
+import lib.gtranslate as translate
 import asyncio
 from lib.load_var import get_var
 import re
@@ -89,7 +89,7 @@ async def auto_language_flag(message, bot):
             return
 
         # Add flag only if message not from french
-        translation, src_lang = gtranslate.translate(message.content, 'fr')
+        translation, src_lang = translate.translate(message.content, 'fr')
         if src_lang != 'Français':
             await message.add_reaction('\U0001f6a9')
 
