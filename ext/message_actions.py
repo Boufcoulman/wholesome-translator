@@ -89,8 +89,8 @@ async def auto_language_flag(message, bot):
             return
 
         # Add flag only if message not from french
-        translation, src_lang = translate.translate(message.content, 'fr')
-        if src_lang != 'Français':
+        translation = translate.translate(message.content, 'fr')
+        if translation.lang != 'Français':
             await message.add_reaction('\U0001f6a9')
 
 

@@ -120,7 +120,7 @@ class CommandsCog(commands.Cog, name="Bot commands"):
         response = requests.get("https://zenquotes.io/api/random")
         json_data = json.loads(response.text)
         quote = json_data[0]['q'] + " -" + json_data[0]['a']
-        await ctx.send(quote + "\n" + translate.translate(quote, 'fr')[0])
+        await ctx.send(quote + "\n" + translate.translate(quote, 'fr').msg)
 
     @commands.command()
     async def language(self, ctx) -> None:
@@ -159,7 +159,7 @@ class CommandsCog(commands.Cog, name="Bot commands"):
             return
 
         to_translate = ' '.join(message)
-        translation = translate.translate(to_translate, lang)[0]
+        translation = translate.translate(to_translate, lang).msg
         await ctx.send(translation)
 
     @translate.error

@@ -5,6 +5,7 @@ from functools import lru_cache
 from requests import get
 from operator import add
 from functools import reduce
+from typing import NamedTuple
 
 translate_table = {
     'af': 'Afrikaans',
@@ -122,6 +123,11 @@ translate_table = {
 MAX_CACHE = 5000
 
 
+class Translation(NamedTuple):
+    msg: str
+    lang: str
+
+
 @lru_cache(maxsize=MAX_CACHE)
 def translate(text, dest_lang, src_lang=None):
     """Translate the given text to the given language.
@@ -132,8 +138,9 @@ def translate(text, dest_lang, src_lang=None):
         src_lang: the text's language, or autodetect if it's None
 
     Returns:
-        translated text if all went well or None otherwise
-        source language if all went well or None otherwise
+        Translation(NamedTuple):
+            msg: translated text
+            lang: the detected language
     """
     if src_lang is None:
         src_lang = 'auto'
@@ -157,14 +164,13 @@ def translate(text, dest_lang, src_lang=None):
 
     json_response = json.loads(response.text)
 
-    detected_lang = translate_table[
+    lang = translate_table[
         json_response[2]
     ]
 
     translated_texts = [sentence[0] for sentence in json_response[0]]
-    translated_msg = reduce(add, [sentence for sentence in translated_texts])
+    msg = reduce(add, [sentence for sentence in translated_texts])
 
-    return (
-        translated_msg,
-        detected_lang,
-    )
+    translation = Translation(msg, lang)
+
+    return translation
