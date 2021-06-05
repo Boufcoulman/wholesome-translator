@@ -146,10 +146,10 @@ def translate(text, dest_lang, src_lang=None):
     try:
         response = get(full_url)
     except Exception:
-        return (None, None)
+        return None
 
     if not response.ok:
-        return (None, None)
+        return None
 
     json_response = json.loads(response.text)
 
