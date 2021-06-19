@@ -120,7 +120,14 @@ class CommandsCog(commands.Cog, name="Bot commands"):
         response = requests.get("https://zenquotes.io/api/random")
         json_data = json.loads(response.text)
         quote = json_data[0]['q'] + " -" + json_data[0]['a']
-        await ctx.send(quote + "\n" + translate.translate(quote, 'fr').msg)
+
+        # Original quote
+        await ctx.send(quote)
+
+        # Translated quote if translation is working
+        quote_translation = translate.translate(quote, 'fr')
+        if quote_translation is not None:
+            await ctx.send(quote_translation.msg)
 
     @commands.command()
     async def language(self, ctx) -> None:
@@ -159,8 +166,13 @@ class CommandsCog(commands.Cog, name="Bot commands"):
             return
 
         to_translate = ' '.join(message)
-        translation = translate.translate(to_translate, lang).msg
-        await ctx.send(translation)
+        translation = translate.translate(to_translate, lang)
+
+        # Send translation if it worked
+        if translation is not None:
+            await ctx.send(translation.msg)
+        else:
+            await ctx.send(translate.translate_error_msg)
 
     @translate.error
     async def translate_handler(self, ctx, error):
