@@ -119,11 +119,20 @@ translate_table = {
     'zu': 'Zulu',
 }
 
+translate_error_msg = ("Erreur de traduction 😢, veuillez contacter les "
+                       "autorités compétentes pour élucider le mystère "
+                       "planant derrière cette sombre affaire...")
 
 MAX_CACHE = 5000
 
 
 class Translation(NamedTuple):
+    """ A named tuple representing a translation:
+
+    Attributes:
+        msg: Translated messages
+        lang: Detected language
+    """
     msg: str
     lang: str
 
@@ -138,9 +147,8 @@ def translate(text, dest_lang, src_lang=None):
         src_lang: the text's language, or autodetect if it's None
 
     Returns:
-        Translation(NamedTuple):
-            msg: translated text
-            lang: the detected language
+        Translation or None: A Translation object if the translation succeeded,
+        otherwise None is returned
     """
     if src_lang is None:
         src_lang = 'auto'
