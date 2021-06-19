@@ -5,6 +5,7 @@ from functools import lru_cache
 from requests import get
 from operator import add
 from functools import reduce
+from typing import NamedTuple
 
 translate_table = {
     'af': 'Afrikaans',
@@ -118,8 +119,22 @@ translate_table = {
     'zu': 'Zulu',
 }
 
+translate_error_msg = ("Erreur de traduction 😢, veuillez contacter les "
+                       "autorités compétentes pour élucider le mystère "
+                       "planant derrière cette sombre affaire...")
 
 MAX_CACHE = 5000
+
+
+class Translation(NamedTuple):
+    """ A named tuple representing a translation:
+
+    Attributes:
+        msg: Translated messages
+        lang: Detected language
+    """
+    msg: str
+    lang: str
 
 
 @lru_cache(maxsize=MAX_CACHE)
@@ -132,35 +147,38 @@ def translate(text, dest_lang, src_lang=None):
         src_lang: the text's language, or autodetect if it's None
 
     Returns:
-        translated text if all went well or None otherwise
-        source language if all went well or None otherwise
+        Translation or None: A Translation object if the translation succeeded,
+        otherwise None is returned
     """
     if src_lang is None:
         src_lang = 'auto'
 
     base_url = 'https://translate.googleapis.com/translate_a/single'
-    default_params = '?client=gtx&dt=t'
-    params = default_params + '&sl=' + src_lang + '&tl=' + dest_lang
-    full_url = base_url + params + '&q=' + text
+    params = {
+        'client': 'gtx',
+        'dt': 't',
+        'sl': src_lang,
+        'tl': dest_lang,
+        'q': text,
+    }
 
     try:
-        response = get(full_url)
+        response = get(url=base_url, params=params)
     except Exception:
-        return (None, None)
+        return None
 
     if not response.ok:
-        return (None, None)
+        return None
 
     json_response = json.loads(response.text)
 
-    detected_lang = translate_table[
+    lang = translate_table[
         json_response[2]
     ]
 
     translated_texts = [sentence[0] for sentence in json_response[0]]
-    translated_msg = reduce(add, [sentence for sentence in translated_texts])
+    msg = reduce(add, [sentence for sentence in translated_texts])
 
-    return (
-        translated_msg,
-        detected_lang,
-    )
+    translation = Translation(msg, lang)
+
+    return translation
