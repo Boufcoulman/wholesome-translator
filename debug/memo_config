@@ -1,0 +1,66 @@
+CMD_PREFIX='%'
+
+# Token de Wholesome-bot-prod
+#DISCORD_TOKEN='NzkyMDYxODIxNzgzMzc1OTEy.X-YPDg.xwRJSyvUtJv6wrLF0-X7nVZvJDw'
+DISCORD_GUILD='DevBotPerso'
+
+BACKUP_CHANNEL='hophophop'
+TARGET_LOCKED='Boufcoulman#9197'
+
+
+# Pokemon bot stuffs
+#MUDAE='Mudae#0807'
+MUDAE='Boufcoulman#9197'
+POKEMON_CHANNEL='pokemon'
+
+
+
+# Majuscules stuff
+VIPS=[
+  402859671817289739, # May
+  354631213631143937, # Will
+  199269158704119808, # Yooo
+  321595611159986176, # Clairo
+  # 287249137857069076, # oim
+  ]
+CAPS_CHAN='spicy-capitals'
+
+# Presentation stuff
+PRES_CHAN='présentations'
+
+
+#Language stuff
+LANG_CHANS = [
+  'chit-chat-in-love-and-joy',
+  'charla-en-amor-y-alegria',
+  'diskussion-in-liebe-und-freude',
+  'worldwide-shitpostingue',
+]
+
+
+# Emoji stuff
+[emoji_IDs]
+#PSYDUCK_ID=751143555904307310  # C'est le vrai psyduck
+PSYDUCK_ID=804601285580029994 # C'est l'emoji hollow knight
+#KOIKINGU_ID=481411448862670851 # C'est le vrai koikingu
+KOIKINGU_ID=804601285580029994  # C'est l'emoji hollow knight
+#GRRPIN_ID=750840460192514068     # C'est le vrai grrpin
+GRRPIN_ID=804601285580029994     # C'est l'emoji hollow knight
+#BLURRYCOP_ID=781922598485098546   # C'est le vrai floucop
+BLURRYCOP_ID=804601285580029994     # C'est l'emoji hollow knight
+#BRETAGNE_ID=511600804625514501
+BRETAGNE_ID=804601285580029994     # C'est l'emoji hollow knight
+#LOVE_ID=778226506996514817
+LOVE_ID=804601285580029994     # C'est l'emoji hollow knight
+#GHOSTHUG_ID=778226507612028939
+GHOSTHUG_ID=804601285580029994     # C'est l'emoji hollow knight
+#KOIDUCK_ID=791322602764238889
+KOIDUCK_ID=804601285580029994     # C'est l'emoji hollow knight
+#PSYKORGASM_ID=802181463326851113
+PSYKORGASM_ID=804601285580029994     # C'est l'emoji hollow knight
+#BLUSH2_ID=778226506882613269
+BLUSH2_ID=804601285580029994     # C'est l'emoji hollow knight
+#BISOU_ID=835939941422858240
+BISOU_ID=804601285580029994
+#PIKAWOW_ID=510402462675501057
+PIKAWOW_ID=804601285580029994

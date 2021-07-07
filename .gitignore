@@ -1,4 +1,7 @@
 .env
-memo*
-parsing_exemple_gtranslate.txt
+# memo*
+# parsing_exemple_gtranslate.txt
 config.toml
+birthday.db
+# wholesome_bot.todo
+# debug/

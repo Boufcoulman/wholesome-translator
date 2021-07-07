@@ -15,6 +15,7 @@ googletrans = "*"
 requests = "*"
 asyncio = "*"
 toml = "*"
+python-dateutil = "*"
 
 [requires]
 python_version = "3.7"

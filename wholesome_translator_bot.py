@@ -20,7 +20,9 @@ bot = commands.Bot(command_prefix=CMD_PREFIX)
 
 # Commands extensions
 initial_extensions = [
-    'ext.bot_commands',
+    'ext.miscellaneous_commands',
+    'ext.translate_commands',
+    'ext.birthday_commands',
     'ext.message_actions',
     'ext.reaction_actions',
 ]
