@@ -19,12 +19,12 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
                        )
 
     @commands.command(name="birthday.update", aliases=["bd.update"])
-    async def update(self, ctx, user, date) -> None:
+    async def update(self, ctx, user, *date_input) -> None:
         """Add or update the birthday of the specified user
 
         Args:
             user: the user tag of the birthday person
-            date: the birthday date "mmdd" or "mm-dd"
+            date: the birthday date "dd-mm"
         """
 
         await ctx.send(f"Oui voilà user:{user} et date:{date}.")

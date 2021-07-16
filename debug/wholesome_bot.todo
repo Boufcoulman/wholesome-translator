@@ -1,9 +1,12 @@
 * refléchir au fonctionnement avec parser (cf debug/birthday_debug.py):
-  * comment je récupère l'input => avec un parse sur la jointure des iputs
-  * comment je sais qu'elle est invalide => grace à parser
+  OK * comment je récupère l'input => avec un parse sur la jointure des iputs
+  OK * comment je sais qu'elle est invalide => grace à parser
   * comment je la stocke en base => en datetime.datetime ? en day-month ? https://www.tutorialspoint.com/How-to-store-and-retrieve-date-into-Sqlite3-database-using-Python
   * comment je compare la date du jour à une entrée dans la base pour l'annonce d'anniversaire
 
 * récupération du user :
   * check dans le bot si le user+le tag renvoi un ID valide
   * pour le ping inverse, on part du ID et on retrouve le tag
+
+* rajouter un blocage des commandes à si ça provient du serveur wholesome
+* refaire une passe pour commenter

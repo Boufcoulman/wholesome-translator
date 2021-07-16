@@ -1,11 +1,18 @@
 import sqlite3
 from typing import NamedTuple
+from dateutil.parser import parse
+import datetime
 
 # https://www.tutorialspoint.com/How-to-store-and-retrieve-date-into-Sqlite3-database-using-Python
 
 # Database stored locally
 BIRTHDAY_DB = 'birthday.db'
 BIRTHDAY_TABLE = 'birthday_table'
+
+# Months of the year in french
+MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+        'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
+        ]
 
 
 class Birthday(NamedTuple):
@@ -112,6 +119,45 @@ def get_all_birthdays() -> [Birthday]:
     ]
 
     return birthdays
+
+
+def date_parser(date_input):
+    """Test if input is a valide birthday date
+
+    Args:
+        date_input: the input to be tested as a date
+
+    Returns:
+        the date object if input is valide, None otherwise
+    """
+
+    # Month in full letter handling
+    date_input = [str(check_if_month(elem)) if check_if_month(elem) else elem
+                  for elem in date_input]
+
+    try:
+        date = parse(' '.join(date_input), dayfirst=True, yearfirst=False)
+        return date
+    except Exception:
+        return None
+
+
+def check_if_month(month_name):
+    """Verify if month exists in letter and return associated number
+
+    Args:
+        month_name: the name to test as a month
+
+    Returns:
+        the month number if the name is valid, None otherwise
+    """
+
+    month_name = month_name.lower()
+    if month_name in MOIS:
+        month = MOIS.index(month_name) + 1
+        return month
+    else:
+        return None
 
 
 if __name__ == "__main__":

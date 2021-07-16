@@ -1,7 +1,5 @@
 CMD_PREFIX='%'
 
-# Token de Wholesome-bot-prod
-#DISCORD_TOKEN='NzkyMDYxODIxNzgzMzc1OTEy.X-YPDg.xwRJSyvUtJv6wrLF0-X7nVZvJDw'
 DISCORD_GUILD='DevBotPerso'
 
 BACKUP_CHANNEL='hophophop'
