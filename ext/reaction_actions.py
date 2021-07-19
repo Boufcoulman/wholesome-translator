@@ -43,11 +43,10 @@ async def translate_on_flag(payload, bot):
         translation = translate.translate(src_msg, 'fr')
 
         # Send translation to the private messages of the user reacting
-        user = await bot.fetch_user(payload.user_id)
-        await user.create_dm()
-
-        # Send translation if it worked
-        if translation is not None:
+        # if it worked
+        if translation:
+            user = await bot.fetch_user(payload.user_id)
+            await user.create_dm()
             await user.dm_channel.send(
                 f"'{src_msg}'\ntraduit du {translation.lang} en\n"
                 f"'{translation.msg}'"
