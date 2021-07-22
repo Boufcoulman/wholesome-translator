@@ -129,6 +129,8 @@ def date_parser(date_input):
 
     Returns:
         the date object if input is valide, None otherwise
+
+    Usage: date = date_parser('27-05')
     """
 
     # Month in full letter handling
@@ -171,3 +173,4 @@ if __name__ == "__main__":
     # remove_birthday('nouveau')
     print(get_birthdays('0504'))
     print(get_all_birthdays())
+    print(check_if_month('jAnvier'))
