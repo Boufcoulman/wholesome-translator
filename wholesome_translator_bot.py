@@ -5,7 +5,7 @@ import traceback
 
 from discord.ext import commands
 from lib.load_var import get_var
-
+import discord
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -16,7 +16,10 @@ CMD_PREFIX = get_var('CMD_PREFIX', '%')
 
 
 log.debug('Creating bot...')
-bot = commands.Bot(command_prefix=CMD_PREFIX)
+# Add intent in order to gather member datas
+intents = discord.Intents.default()
+intents.members = True
+bot = commands.Bot(command_prefix=CMD_PREFIX, intents=intents)
 
 # Commands extensions
 initial_extensions = [
