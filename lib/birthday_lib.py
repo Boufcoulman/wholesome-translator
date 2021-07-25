@@ -127,7 +127,7 @@ def db_date(date: datetime.date) -> str:
     return str(date.day) + '-' + str(date.month)
 
 
-def date_parser(*date_input):
+def date_parser(date_input: (str)):
     """Test if input is a valide birthday date
 
     Args:
