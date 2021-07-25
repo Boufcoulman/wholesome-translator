@@ -1,6 +1,7 @@
 from discord.ext import commands
 import re
 import lib.birthday_lib as bd_lib
+from lib.birthday_lib import Birthday
 import discord
 
 
@@ -21,7 +22,7 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
                        )
 
     @commands.command(name="birthday.update", aliases=["bd.update"])
-    async def update(self, ctx, user, *date_input) -> None:
+    async def update(self, ctx, user_info, *date_input) -> None:
         """Add or update the birthday of the specified user
 
         Args:
@@ -30,19 +31,31 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
 
         Usage : %update Mudae#0807 27-05
         """
+        # Check if the user is valid
+        user = self.user_parser(ctx, user_info)
+        if not user:
+            await ctx.send("Mauvaise utilisation de la commande, "
+                           f"l'utilisateur {user_info} n'existe pas.\n"
+                           f"Exemple : `{self.bot.command_prefix}bd.update "
+                           "Mudae#0807 27-05`\n"
+                           "Vérifiez la syntaxe Nom#1234, ou le discord id, "
+                           "ou taggez directement la personne @personne !")
+            return
 
-        await ctx.send(f"Oui voilà user:{user} et date:{date}.")
+        # Check if the date is valid
+        date = bd_lib.date_parser(date_input)
+        if not date:
+            await ctx.send("Le format de date n'est pas reconnu !\n"
+                           "Pour ajouter un anniversaire le 20 mars, "
+                           "il faut écrire 20-03.")
+            return
 
-        if BIRTHDAY_RE.match(birthday):
-            birthday = date
-            await ctx.send("Format mmdd")
-        elif ALT_BIRTHDAY_RE.match(date):
-            # birthday =
-            await ctx.send("Format mm-dd")
-        else:
-            await ctx.send("ça ne fonctionne pas :/")
+        # Update database
+        bd_lib.update_birthday(user.id, date)
+        await ctx.send(f"La date d'anniversaire {date} a été enregistrée pour "
+                       f"l'utilisateur {user} !")
 
-    async def user_parser(self, ctx, user) -> discord.User.id:
+    def user_parser(self, ctx, user) -> discord.User:
         """Verify that user exists and returns it's discord id if so
 
         Args:
@@ -72,13 +85,20 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
         else:
             found_user = None
 
-        return found_user.id if found_user else None
+        return found_user
 
     @ commands.command(name="birthday.list", aliases=["bd.list"])
     async def list(self, ctx) -> None:
         """Certes
         """
-        await ctx.send("Oui voilà la liste.")
+        bds = bd_lib.get_all_birthdays()
+        list = '\n'.join([
+            str(
+                ctx.guild.get_member(bd.user_id)
+            ) + ' : ' + bd.birthday for bd in bds
+        ])
+        await ctx.send("Oui voilà la liste :\n"
+                       f"{list}")
 
     @ commands.command(name="birthday.delete", aliases=["bd.delete"])
     async def delete(self, ctx, user) -> None:

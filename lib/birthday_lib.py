@@ -138,13 +138,14 @@ def date_parser(date_input: (str)):
 
     Usage: date = date_parser('27-05')
     """
-
     # Month in full letter handling
     date_input = [str(check_if_month(elem)) if check_if_month(elem) else elem
                   for elem in date_input]
 
     try:
         date = parse(' '.join(date_input), dayfirst=True, yearfirst=False)
+        if date.year != datetime.date.today().year:
+            return None
         return db_date(date)
     except Exception:
         return None
@@ -171,14 +172,15 @@ def check_if_month(month_name):
 if __name__ == "__main__":
 
     init_birthday_db()
-    update_birthday(1, date_parser("16 04"))
-    update_birthday(2, date_parser("13 04"))
-    update_birthday(12, date_parser("13 04"))
-    update_birthday(75240, date_parser("25 04"))
-    remove_birthday(75240)
+    # update_birthday(1, date_parser("16-04"))
+    # update_birthday(2, date_parser("13-04"))
+    # update_birthday(12, date_parser("13-04"))
+    # update_birthday(75240, date_parser("25-04"))
+    # remove_birthday(75240)
     print(get_birthdays("13-4"))
     print(get_all_birthdays())
-    print(date_parser('25-05'))
+    print(date_parser('0-05'))
+    print(parse('65 5', dayfirst=True, yearfirst=False))
     print(datetime.date.today())
     print("oui"
           if date_parser('25-7') == db_date(datetime.date.today())
