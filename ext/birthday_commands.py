@@ -42,7 +42,7 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
         else:
             await ctx.send("ça ne fonctionne pas :/")
 
-    async def parse_user(self, ctx, user) -> discord.User.id:
+    async def user_parser(self, ctx, user) -> discord.User.id:
         """Verify that user exists and returns it's discord id if so
 
         Args:

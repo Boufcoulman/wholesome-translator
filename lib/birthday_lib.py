@@ -19,10 +19,10 @@ class Birthday(NamedTuple):
     """ A named tuple representing a birthday:
 
     Attributes:
-        user: The user whose birthday it is
+        user_id: The id of the user whose birthday it is
         birthday: The date of the birthday
     """
-    user: str
+    user_id: int
     birthday: str
 
 
@@ -35,18 +35,18 @@ def init_birthday_db():
     # Create birthday table if not existing
     cursor.execute(f"""
     CREATE TABLE IF NOT EXISTS {BIRTHDAY_TABLE}(
-        user TEXT PRIMARY KEY,
-        birthday STRING
+        user INTEGER PRIMARY KEY,
+        birthday TEXT
     )
     """)
 
 
-def update_birthday(user: str, birthday: str):
+def update_birthday(user: int, birthday: str):
     """Add or modify the birthday of the wanted user
 
     Args:
         user: discord identifier of the user
-        birthday: birthday date of the user
+        birthday: birthday date of the user ('dd-mm')
     """
     conn = sqlite3.connect(BIRTHDAY_DB)
     cursor = conn.cursor()
@@ -80,7 +80,7 @@ def remove_birthday(user: str):
     conn.close()
 
 
-def get_birthdays(date: str) -> [str]:
+def get_birthdays(date: str) -> [int]:
     """Get the users whose birthdays are on date
 
     Args:
@@ -121,14 +121,20 @@ def get_all_birthdays() -> [Birthday]:
     return birthdays
 
 
-def date_parser(date_input):
+def db_date(date: datetime.date) -> str:
+    """Convert date to be stored in the database
+    """
+    return str(date.day) + '-' + str(date.month)
+
+
+def date_parser(*date_input):
     """Test if input is a valide birthday date
 
     Args:
         date_input: the input to be tested as a date
 
     Returns:
-        the date object if input is valide, None otherwise
+        date as 'day-month' if input is valide, None otherwise
 
     Usage: date = date_parser('27-05')
     """
@@ -139,7 +145,7 @@ def date_parser(date_input):
 
     try:
         date = parse(' '.join(date_input), dayfirst=True, yearfirst=False)
-        return date
+        return db_date(date)
     except Exception:
         return None
 
@@ -165,12 +171,15 @@ def check_if_month(month_name):
 if __name__ == "__main__":
 
     init_birthday_db()
-    # update_birthday('yes', datetime.date(2018, 1, 4))
-    update_birthday('nouveau', '0504')
-    update_birthday('oui#jamie', '0504')
-    update_birthday('ousi#jamie', '0504')
-    update_birthday('oud#jamie', '0504')
-    # remove_birthday('nouveau')
-    print(get_birthdays('0504'))
+    update_birthday(1, date_parser("16 04"))
+    update_birthday(2, date_parser("13 04"))
+    update_birthday(12, date_parser("13 04"))
+    update_birthday(75240, date_parser("25 04"))
+    remove_birthday(75240)
+    print(get_birthdays("13-4"))
     print(get_all_birthdays())
-    print(check_if_month('jAnvier'))
+    print(date_parser('25-05'))
+    print(datetime.date.today())
+    print("oui"
+          if date_parser('25-7') == db_date(datetime.date.today())
+          else None)
