@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 import random
 
 # Channels
-POKEMON_CHANNEL = get_var('POKEMON_CHANNEL')
+POKEMON_CHAN = get_var('POKEMON_CHAN')
 CAPS_CHAN = get_var('CAPS_CHAN')
 LANG_CHANS = get_var('LANG_CHANS')
 PRES_CHAN = get_var('PRES_CHAN')
@@ -175,7 +175,7 @@ async def poke_react(message, bot):
     author = str(message.author)
 
     # Interract with bot Muade if she spoke pokemon channel
-    if author != MUDAE or channel != POKEMON_CHANNEL:
+    if author != MUDAE or channel != POKEMON_CHAN:
         return
 
     reaction_triggers = {
