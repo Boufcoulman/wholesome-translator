@@ -127,6 +127,13 @@ def db_date(date: datetime.date) -> str:
     return str(date.day) + '-' + str(date.month)
 
 
+def display_db_date(db_date: str) -> str:
+    """Convert db_date to be nicely displayed
+    """
+    day, month = db_date.split('-')
+    return day + ' ' + MOIS[int(month) - 1].capitalize()
+
+
 def date_parser(date_input: (str)):
     """Test if input is a valide birthday date
 
@@ -170,8 +177,9 @@ def check_if_month(month_name):
 
 
 if __name__ == "__main__":
-
     init_birthday_db()
+
+    print(display_db_date('1-12'))
     # update_birthday(1, date_parser("16-04"))
     # update_birthday(2, date_parser("13-04"))
     # update_birthday(12, date_parser("13-04"))

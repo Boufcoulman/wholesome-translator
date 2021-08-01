@@ -1,7 +1,6 @@
 from discord.ext import commands
 import re
 import lib.birthday_lib as bd_lib
-from lib.birthday_lib import Birthday
 import discord
 
 
@@ -29,7 +28,7 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
             user: the user tag of the birthday person
             date: the birthday date "dd-mm"
 
-        Usage : %update Mudae#0807 27-05
+        Usage : %bd.update Mudae#0807 27-05
         """
         # Check if the user is valid
         user = self.user_parser(ctx, user_info)
@@ -89,22 +88,46 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
 
     @ commands.command(name="birthday.list", aliases=["bd.list"])
     async def list(self, ctx) -> None:
-        """Certes
+        """Display the list of every birthdays registered in the database
         """
         bds = bd_lib.get_all_birthdays()
         list = '\n'.join([
             str(
                 ctx.guild.get_member(bd.user_id)
-            ) + ' : ' + bd.birthday for bd in bds
+            ) + ' : ' + bd_lib.display_db_date(bd.birthday) for bd in bds
         ])
-        await ctx.send("Oui voilà la liste :\n"
+        await ctx.send("Liste des anniversaires enregistrés :\n"
                        f"{list}")
 
-    @ commands.command(name="birthday.delete", aliases=["bd.delete"])
-    async def delete(self, ctx, user) -> None:
-        """Certes
+    @ commands.command(
+        name="birthday.delete",
+        aliases=["bd.delete", "bd.remove"]
+    )
+    async def delete(self, ctx, user_info) -> None:
+        """Delete targeted user from the birthday database
+
+        Args:
+            user: the user tag of the birthday person
+
+        Usage:
+            %bd.delete Mudae#0807
         """
-        await ctx.send(f"Oui voilà à supprimer:{user}.")
+        # Check if the user is valid
+        user = self.user_parser(ctx, user_info)
+        if user:
+            # Update database
+            bd_lib.remove_birthday(user.id)
+            await ctx.send(
+                f"L'anniversaire de l'utilisateur {user} a été retiré !"
+            )
+        else:
+            # Yell at discord user
+            await ctx.send("Mauvaise utilisation de la commande, "
+                           f"l'utilisateur {user_info} n'existe pas.\n"
+                           f"Exemple : `{self.bot.command_prefix}bd.delete "
+                           "Mudae#0807`\n"
+                           "Vérifiez la syntaxe Nom#1234, ou le discord id, "
+                           "ou taggez directement la personne @personne !")
 
 
 def setup(bot):
