@@ -8,6 +8,8 @@ from lib.load_var import get_var
 USER_TAG_RE = re.compile(r'.*#\d{4}')
 USER_ID_RE = re.compile(r'\d{18}')
 
+ZAMI_ROLE = get_var('ZAMI_ROLE')
+
 
 class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
     def __init__(self, bot):
@@ -37,6 +39,12 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
         if ctx.guild.id != get_var('SERVER_ID'):
             await ctx.send("You are not supposed to use this command on "
                            f"this server : {str(ctx.guild)}")
+            return
+
+        # Exit if the user has not the adequate role
+        if ctx.author not in ctx.guild.get_role(ZAMI_ROLE).members:
+            await ctx.send("You don't have the adequate role to "
+                           "execute this command.")
             return
 
         # Check if the user is valid
@@ -133,6 +141,12 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
         if ctx.guild.id != get_var('SERVER_ID'):
             await ctx.send("You are not supposed to use this command on "
                            f"this server : {str(ctx.guild)}")
+            return
+
+        # Exit if the user has not the adequate role
+        if ctx.author not in ctx.guild.get_role(ZAMI_ROLE).members:
+            await ctx.send("You don't have the adequate role to "
+                           "execute this command.")
             return
 
         # Check if the user is valid
