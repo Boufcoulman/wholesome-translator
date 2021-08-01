@@ -6,9 +6,14 @@ DISCORD_TOKEN='atokenrandomlygeneratedbydiscord'
 # Bot command prefix
 CMD_PREFIX='%'
 
+# Discord wholesome
+SERVER_ID=471398954698014720
+BIRTHDAY_CHAN=471398955264114688
+INSPIRE_CHAN=803904527287058473
+
 # Pokemon bot stuff
 MUDAE='Mudae#0807'
-POKEMON_CHANNEL='pokemon'
+POKEMON_CHAN='pokemon'
 
 # Capitals stuff
 VIPS=[

@@ -2,6 +2,7 @@ from discord.ext import commands
 import re
 import lib.birthday_lib as bd_lib
 import discord
+from lib.load_var import get_var
 
 
 USER_TAG_RE = re.compile(r'.*#\d{4}')
@@ -16,11 +17,13 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
     async def menu(self, ctx) -> None:
         """Get the list of birthday commands
         """
-        await ctx.send("Afin d'utiliser le bot d'anniversaire "
-                       "ou"
-                       )
+        await ctx.send("Afin d'utiliser le bot d'anniversaire vous pouvez"
+                       "utiliser les commandes suivantes :\n"
+                       "-Ajouter un anniversaire : `bd.add Mudae#0807 11-08`\n"
+                       "-Supprimer un anniversaire : `bd.delete Mudae#0807`\n"
+                       "-Afficher les anniversaire : `bd.list`")
 
-    @commands.command(name="birthday.update", aliases=["bd.update"])
+    @commands.command(name="birthday.update", aliases=["bd.update", "bd.add"])
     async def update(self, ctx, user_info, *date_input) -> None:
         """Add or update the birthday of the specified user
 
@@ -30,6 +33,12 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
 
         Usage : %bd.update Mudae#0807 27-05
         """
+        # Exit if it's not from the adequate server
+        if ctx.guild.id != get_var('SERVER_ID'):
+            await ctx.send("You are not supposed to use this command on "
+                           f"this server : {str(ctx.guild)}")
+            return
+
         # Check if the user is valid
         user = self.user_parser(ctx, user_info)
         if not user:
@@ -51,8 +60,8 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
 
         # Update database
         bd_lib.update_birthday(user.id, date)
-        await ctx.send(f"La date d'anniversaire {date} a été enregistrée pour "
-                       f"l'utilisateur {user} !")
+        await ctx.send(f"La date d'anniversaire {bd_lib.display_db_date(date)}"
+                       f" a été enregistrée pour l'utilisateur {user} !")
 
     def user_parser(self, ctx, user) -> discord.User:
         """Verify that user exists and returns it's discord id if so
@@ -90,14 +99,22 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
     async def list(self, ctx) -> None:
         """Display the list of every birthdays registered in the database
         """
+        # Exit if it's not from the adequate server
+        if ctx.guild.id != get_var('SERVER_ID'):
+            await ctx.send("You are not supposed to use this command on "
+                           f"this server : {str(ctx.guild)}")
+            return
+
         bds = bd_lib.get_all_birthdays()
-        list = '\n'.join([
+        bds_list = [
             str(
                 ctx.guild.get_member(bd.user_id)
             ) + ' : ' + bd_lib.display_db_date(bd.birthday) for bd in bds
-        ])
+        ]
+        bds_list.sort()
+        bds_display = '\n'.join(bds_list)
         await ctx.send("Liste des anniversaires enregistrés :\n"
-                       f"{list}")
+                       f"{bds_display}")
 
     @ commands.command(
         name="birthday.delete",
@@ -112,6 +129,12 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
         Usage:
             %bd.delete Mudae#0807
         """
+        # Exit if it's not from the adequate server
+        if ctx.guild.id != get_var('SERVER_ID'):
+            await ctx.send("You are not supposed to use this command on "
+                           f"this server : {str(ctx.guild)}")
+            return
+
         # Check if the user is valid
         user = self.user_parser(ctx, user_info)
         if user:

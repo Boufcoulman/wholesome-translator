@@ -80,7 +80,7 @@ def remove_birthday(user: str):
     conn.close()
 
 
-def get_birthdays(date: str) -> [int]:
+def get_birthdays(date: datetime.date) -> [int]:
     """Get the users whose birthdays are on date
 
     Args:
@@ -94,7 +94,7 @@ def get_birthdays(date: str) -> [int]:
 
     # Get the list of birthdays
     cursor.execute(f"""
-    SELECT user FROM {BIRTHDAY_TABLE} WHERE birthday='{date}'
+    SELECT user FROM {BIRTHDAY_TABLE} WHERE birthday='{db_date(date)}'
     """)
     users = [user_record[0] for user_record in cursor.fetchall()]
 
@@ -150,9 +150,10 @@ def date_parser(date_input: (str)):
                   for elem in date_input]
 
     try:
-        date = parse(' '.join(date_input), dayfirst=True, yearfirst=False)
-        if date.year != datetime.date.today().year:
-            return None
+        # 1964 si a leap year, so it will allow the 29 of february
+        date = parse(' '.join(date_input) + ' 1964',
+                     dayfirst=True,
+                     yearfirst=False)
         return db_date(date)
     except Exception:
         return None
