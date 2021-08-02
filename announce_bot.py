@@ -94,7 +94,7 @@ async def on_ready():
                          "c'est l'anniversaire de ")
         greeting_end = """ !!!\nJoyeux anniversaire 🎉✨🌈🎊🎂💖"""
 
-        # User string depends on number of birthhdays
+        # User string depends on number of birthdays
         user_string = user_mentions[0]
         if len(BD_USERS) > 1:
             for user in user_mentions[1:-1]:

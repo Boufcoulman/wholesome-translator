@@ -14,6 +14,10 @@ ZAMI_ROLE=471413973384822795
 MEUBLES_ROLE=471399641955565590
 EGIDE_ROLE=471458252354355241
 
+# Birthday infos
+BIRTHDAY_DB='/home/pi/wholesome-translator/birthday.db'
+BIRTHDAY_TABLE='birthday_table'
+
 # Pokemon bot stuff
 MUDAE='Mudae#0807'
 POKEMON_CHAN='pokemon'

@@ -2,12 +2,13 @@ import sqlite3
 from typing import NamedTuple
 from dateutil.parser import parse
 import datetime
+from lib.load_var import get_var
 
 # https://www.tutorialspoint.com/How-to-store-and-retrieve-date-into-Sqlite3-database-using-Python
 
 # Database stored locally
-BIRTHDAY_DB = 'birthday.db'
-BIRTHDAY_TABLE = 'birthday_table'
+BIRTHDAY_DB = get_var('BIRTHDAY_DB')
+BIRTHDAY_TABLE = get_var('BIRTHDAY_TABLE')
 
 # Months of the year in french
 MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
