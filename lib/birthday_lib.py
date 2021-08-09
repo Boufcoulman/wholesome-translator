@@ -1,5 +1,5 @@
 import sqlite3
-from typing import NamedTuple
+from typing import NamedTuple, List, Optional
 from dateutil.parser import parse
 import datetime
 from lib.load_var import get_var
@@ -10,38 +10,91 @@ from lib.load_var import get_var
 BIRTHDAY_DB = get_var('BIRTHDAY_DB')
 BIRTHDAY_TABLE = get_var('BIRTHDAY_TABLE')
 
-# Months of the year in french
-MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
-        'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
-        ]
+MONTHS = (
+    'janvier',
+    'février',
+    'mars',
+    'avril',
+    'mai',
+    'juin',
+    'juillet',
+    'août',
+    'septembre',
+    'octobre',
+    'novembre',
+    'décembre',
+)
+
+
+def get_month(number: int) -> Optional[str]:
+    """Get the name of the month from its number.
+
+    Args:
+        number: the number of the month
+
+    Returns:
+        the name of the month in lowercase French or None
+        if the number is not correct
+
+    >>> get_month(2)
+    'février'
+    >>> get_month(14)
+    """
+    try:
+        return MONTHS[number - 1]
+    except IndexError:
+        return None
+
+
+def get_month_number(month: str) -> Optional[int]:
+    """Get the number of the month from its French name.
+
+    Args:
+        month: the name of the month in French
+
+    Returns:
+        the number of the month starting with 1 for January
+        or None if the name is incorrect
+
+    >>> get_month_number('FéVriEr')
+    2
+
+    >>> get_month_number('')
+    >>> get_month_number('may')
+    """
+    try:
+        return MONTHS.index(month.lower()) + 1
+    except ValueError:
+        return None
 
 
 class Birthday(NamedTuple):
-    """ A named tuple representing a birthday:
+    """A named tuple representing a birthday.
 
     Attributes:
         user_id: The id of the user whose birthday it is
         birthday: The date of the birthday
     """
+
     user_id: int
     birthday: str
 
 
-def init_birthday_db():
+def init_birthday_db() -> None:
     """Initialize the database meant to gather birthday dates."""
     conn = sqlite3.connect(BIRTHDAY_DB)
     cursor = conn.cursor()
 
     # Create birthday table if not existing
     cursor.execute(f"""
-    CREATE TABLE IF NOT EXISTS {BIRTHDAY_TABLE}(
+    CREATE TABLE IF NOT EXISTS {BIRTHDAY_TABLE} (
         user INTEGER PRIMARY KEY,
         birthday TEXT
     )
     """)
 
 
-def update_birthday(user: int, birthday: str):
+def update_birthday(user: int, birthday: str) -> None:
     """Add or modify the birthday of the wanted user.
 
     Args:
@@ -52,22 +105,20 @@ def update_birthday(user: int, birthday: str):
     cursor = conn.cursor()
 
     # Update birthday for specified user
-    cursor.execute(f"""
-    INSERT OR REPLACE INTO {BIRTHDAY_TABLE}(
-        user,
-        birthday
-        ) VALUES(?,?)""",
-                   (user, birthday)
-                   )
+    cursor.execute(
+        f"""INSERT OR REPLACE INTO {BIRTHDAY_TABLE}
+        (user, birthday) VALUES (?,?)""",
+        (user, birthday),
+    )
     conn.commit()
     conn.close()
 
 
-def remove_birthday(user: str):
+def remove_birthday(user: str) -> None:
     """Remove the birthday of the wanted user.
 
     Args:
-        usr: discord identifier of the user
+        user: discord identifier of the user
     """
     conn = sqlite3.connect(BIRTHDAY_DB)
     cursor = conn.cursor()
@@ -80,8 +131,8 @@ def remove_birthday(user: str):
     conn.close()
 
 
-def get_birthdays(date: datetime.date) -> [int]:
-    """Get the users whose birthdays are on date.
+def get_birthdays(date: datetime.date) -> List[int]:
+    """Get the users whose birthdays are on given date.
 
     Args:
         date: the date on which we want to know who were born
@@ -96,12 +147,11 @@ def get_birthdays(date: datetime.date) -> [int]:
     cursor.execute(f"""
     SELECT user FROM {BIRTHDAY_TABLE} WHERE birthday='{db_date(date)}'
     """)
-    users = [user_record[0] for user_record in cursor.fetchall()]
 
-    return users
+    return [user_record[0] for user_record in cursor]
 
 
-def get_all_birthdays() -> [Birthday]:
+def get_all_birthdays() -> List[Birthday]:
     """Get all the birthdays.
 
     Returns:
@@ -112,83 +162,77 @@ def get_all_birthdays() -> [Birthday]:
 
     # Get the list of users
     cursor.execute(f"""
-    SELECT * FROM {BIRTHDAY_TABLE}
+    SELECT user, birthday FROM {BIRTHDAY_TABLE}
+    ORDER BY birthday
     """)
-    birthdays = [
-        Birthday(record[0], record[1]) for record in cursor.fetchall()
-    ]
 
-    return birthdays
+    return [Birthday(*record) for record in cursor]
 
 
 def db_date(date: datetime.date) -> str:
-    """Convert date to be stored in the database."""
-    return str(date.day) + '-' + str(date.month)
+    """Convert date to be stored in the database.
+
+    Args:
+        date: the date to convert to string
+
+    Returns:
+        the date converted to the format used in the database
+
+    >>> db_date(datetime.date.fromisoformat('2022-01-01'))
+    '2022-01-01'
+    """
+    return date.isoformat()
 
 
-def display_db_date(db_date: str) -> str:
-    """Convert db_date to be nicely displayed."""
-    day, month = db_date.split('-')
-    return day + ' ' + MOIS[int(month) - 1].capitalize()
+def display_db_date(date_db: str) -> str:
+    """Convert db_date to be nicely displayed.
+
+    Args:
+        date_db: the date in the database format
+
+    Returns:
+        the date formated in a user readable form
+
+    >>> display_db_date('1964-02-29')
+    '29 Février'
+    """
+    _, month, day = date_db.split('-')
+    month_name = get_month(int(month))
+
+    return f'{day} {month_name}'.title()
 
 
-def date_parser(date_input: (str)):
-    """Test if input is a valide birthday date.
+def date_parser(date_input: str) -> Optional[str]:
+    """Test if input is a valid birthday date.
 
     Args:
         date_input: the input to be tested as a date
 
     Returns:
-        date as 'day-month' if input is valide, None otherwise
+        date as 'day-month' if input is valid, None otherwise
 
-    Usage: date = date_parser('27-05')
+    >>> date_parser('27-05')
+    '1964-05-27'
+    >>> date_parser('27 05')
+    '1964-05-27'
+    >>> date_parser('27-mai')
+    '1964-05-27'
+    >>> date_parser('27 mai')
+    '1964-05-27'
+    >>> date_parser('   27      05  ')
+    '1964-05-27'
+    >>> date_parser('')
     """
+    if not date_input:
+        return None
+
+    # 1964 is a leap year, so it will allow the 29 of february
+    date_input = f'{date_input}-1964'
+    date_input = date_input.replace('-', ' ').split(' ')
     # Month in full letter handling
-    date_input = [str(check_if_month(elem)) if check_if_month(elem) else elem
-                  for elem in date_input]
-
+    date_input = [str(get_month_number(elem) or elem) for elem in date_input]
     try:
-        # 1964 si a leap year, so it will allow the 29 of february
-        date = parse(' '.join(date_input) + ' 1964',
-                     dayfirst=True,
-                     yearfirst=False)
-        return db_date(date)
-    except Exception:
+        date = parse(' '.join(date_input), dayfirst=True, yearfirst=False)
+    except OverflowError:
         return None
-
-
-def check_if_month(month_name):
-    """Verify if month exists in letter and return associated number.
-
-    Args:
-        month_name: the name to test as a month
-
-    Returns:
-        the month number if the name is valid, None otherwise
-    """
-
-    month_name = month_name.lower()
-    if month_name in MOIS:
-        month = MOIS.index(month_name) + 1
-        return month
-    else:
-        return None
-
-
-if __name__ == "__main__":
-    init_birthday_db()
-
-    print(display_db_date('1-12'))
-    # update_birthday(1, date_parser("16-04"))
-    # update_birthday(2, date_parser("13-04"))
-    # update_birthday(12, date_parser("13-04"))
-    # update_birthday(75240, date_parser("25-04"))
-    # remove_birthday(75240)
-    print(get_birthdays("13-4"))
-    print(get_all_birthdays())
-    print(date_parser('0-05'))
-    print(parse('65 5', dayfirst=True, yearfirst=False))
-    print(datetime.date.today())
-    print("oui"
-          if date_parser('25-7') == db_date(datetime.date.today())
-          else None)
+    return db_date(date.date())

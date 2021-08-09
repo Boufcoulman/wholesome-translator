@@ -1,9 +1,10 @@
-from discord.ext import commands
 import re
-import lib.birthday_lib as bd_lib
-import discord
-from lib.load_var import get_var
 
+import discord
+from discord.ext import commands
+
+from lib import birthday_lib as bd_lib
+from lib.load_var import get_var
 
 USER_TAG_RE = re.compile(r'.*#\d{4}')
 USER_ID_RE = re.compile(r'\d{18}')
@@ -63,13 +64,15 @@ class BirthdayCmdCog(commands.Cog, name="Birthday commands"):
         if not date:
             await ctx.send("Le format de date n'est pas reconnu !\n"
                            "Pour ajouter un anniversaire le 20 mars, "
-                           "il faut écrire 20-03.")
+                           "il faut écrire `20-03` ou `20 mars`.")
             return
 
         # Update database
         bd_lib.update_birthday(user.id, date)
-        await ctx.send(f"La date d'anniversaire {bd_lib.display_db_date(date)}"
-                       f" a été enregistrée pour l'utilisateur {user} !")
+        await ctx.send(
+            f"La date d'anniversaire {bd_lib.display_db_date(date)}"
+            f" a été enregistrée pour l'utilisateur {user} !"
+        )
 
     def user_parser(self, ctx, user) -> discord.User:
         """Verify that user exists and returns it's discord id if so

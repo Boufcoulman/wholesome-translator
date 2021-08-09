@@ -14,8 +14,10 @@ python-dateutil = "*"
 
 [dev-packages]
 flake8 = "*"
-wemake-python-styleguide = "*"
+ipython = "*"
 isort = "*"
+python-lsp-server = {extras = ["all"], version = "*"}
+wemake-python-styleguide = "*"
 
 [requires]
 python_version = "3.10"
