@@ -1,5 +1,5 @@
 import sqlite3
-from typing import NamedTuple
+from typing import NamedTuple, List, Optional
 from dateutil.parser import parse
 import datetime
 from lib.load_var import get_var
@@ -11,9 +11,11 @@ BIRTHDAY_DB = get_var('BIRTHDAY_DB')
 BIRTHDAY_TABLE = get_var('BIRTHDAY_TABLE')
 
 # Months of the year in french
-MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
-        'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
-        ]
+MOIS = {str(number): name for number, name in enumerate([
+    'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+    1)}
+MOIS_INV = dict(zip(MOIS.values(), MOIS.keys()))
 
 
 class Birthday(NamedTuple):
@@ -35,7 +37,7 @@ def init_birthday_db():
 
     # Create birthday table if not existing
     cursor.execute(f"""
-    CREATE TABLE IF NOT EXISTS {BIRTHDAY_TABLE}(
+    CREATE TABLE IF NOT EXISTS {BIRTHDAY_TABLE} (
         user INTEGER PRIMARY KEY,
         birthday TEXT
     )
@@ -53,13 +55,11 @@ def update_birthday(user: int, birthday: str):
     cursor = conn.cursor()
 
     # Update birthday for specified user
-    cursor.execute(f"""
-    INSERT OR REPLACE INTO {BIRTHDAY_TABLE}(
-        user,
-        birthday
-        ) VALUES(?,?)""",
-                   (user, birthday)
-                   )
+    cursor.execute(
+        f"""INSERT OR REPLACE INTO {BIRTHDAY_TABLE}
+        (user, birthday) VALUES (?,?)""",
+        (user, birthday),
+    )
     conn.commit()
     conn.close()
 
@@ -81,7 +81,7 @@ def remove_birthday(user: str):
     conn.close()
 
 
-def get_birthdays(date: datetime.date) -> [int]:
+def get_birthdays(date: datetime.date) -> List[int]:
     """Get the users whose birthdays are on date
 
     Args:
@@ -97,12 +97,12 @@ def get_birthdays(date: datetime.date) -> [int]:
     cursor.execute(f"""
     SELECT user FROM {BIRTHDAY_TABLE} WHERE birthday='{db_date(date)}'
     """)
-    users = [user_record[0] for user_record in cursor.fetchall()]
+    users = [user_record[0] for user_record in cursor]
 
     return users
 
 
-def get_all_birthdays() -> [Birthday]:
+def get_all_birthdays() -> List[Birthday]:
     """Get all the birthdays
 
     Returns:
@@ -113,11 +113,10 @@ def get_all_birthdays() -> [Birthday]:
 
     # Get the list of users
     cursor.execute(f"""
-    SELECT * FROM {BIRTHDAY_TABLE}
+    SELECT user, birthday FROM {BIRTHDAY_TABLE}
+    ORDER BY SUBSTR(birthday, 4, 2), SUBSTR(birthday, 1,2)
     """)
-    birthdays = [
-        Birthday(record[0], record[1]) for record in cursor.fetchall()
-    ]
+    birthdays = [Birthday(*record) for record in cursor]
 
     return birthdays
 
@@ -125,33 +124,32 @@ def get_all_birthdays() -> [Birthday]:
 def db_date(date: datetime.date) -> str:
     """Convert date to be stored in the database
     """
-    return str(date.day) + '-' + str(date.month)
+    return f"{date.day}-{date.month}"
 
 
 def display_db_date(db_date: str) -> str:
     """Convert db_date to be nicely displayed
     """
     day, month = db_date.split('-')
-    return day + ' ' + MOIS[int(month) - 1].capitalize()
+    return f"{day} {MOIS[month]}".title()
 
 
-def date_parser(date_input: (str)):
-    """Test if input is a valide birthday date
+def date_parser(date_input: str):
+    """Test if input is a valid birthday date
 
     Args:
         date_input: the input to be tested as a date
 
     Returns:
-        date as 'day-month' if input is valide, None otherwise
+        date as 'day-month' if input is valid, None otherwise
 
     Usage: date = date_parser('27-05')
     """
     # Month in full letter handling
-    date_input = [str(check_if_month(elem)) if check_if_month(elem) else elem
-                  for elem in date_input]
+    date_input = [check_if_month(elem) or elem for elem in date_input]
 
     try:
-        # 1964 si a leap year, so it will allow the 29 of february
+        # 1964 is a leap year, so it will allow the 29 of february
         date = parse(' '.join(date_input) + ' 1964',
                      dayfirst=True,
                      yearfirst=False)
@@ -160,7 +158,7 @@ def date_parser(date_input: (str)):
         return None
 
 
-def check_if_month(month_name):
+def check_if_month(month_name: str) -> Optional[str]:
     """Verify if month exists in letter and return associated number
 
     Args:
@@ -169,13 +167,7 @@ def check_if_month(month_name):
     Returns:
         the month number if the name is valid, None otherwise
     """
-
-    month_name = month_name.lower()
-    if month_name in MOIS:
-        month = MOIS.index(month_name) + 1
-        return month
-    else:
-        return None
+    return MOIS_INV.get(month_name.lower())
 
 
 if __name__ == "__main__":
