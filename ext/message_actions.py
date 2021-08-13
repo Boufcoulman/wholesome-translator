@@ -65,7 +65,7 @@ async def hearts_on_presentation(message, bot):
     if message.author == bot.user:
         return
 
-    if str(message.channel) == str(PRES_CHAN):
+    if message.channel.id == PRES_CHAN:
         hearts = ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤎', '🤍']
         for heart in hearts:
             await message.add_reaction(heart)
@@ -78,7 +78,7 @@ async def auto_language_flag(message, bot):
         message: The message that was just posted on the channel
         bot: The bot
     """
-    if str(message.channel) in LANG_CHANS:
+    if message.channel.id in LANG_CHANS:
 
         if EMOJI_RE.match(message.content):
             return
@@ -108,7 +108,7 @@ async def capital_letters_cop(message, bot):
     if message.author == bot.user:
         return
 
-    if str(message.channel) != CAPS_CHAN:
+    if message.channel.id != CAPS_CHAN:
         return
 
     if 'bisou' in message.content.lower():
@@ -171,7 +171,7 @@ async def poke_react(message, bot):
     if message.author == bot.user:
         return
 
-    channel = str(message.channel)
+    channel = message.channel.id
     author = str(message.author)
 
     # Interract with bot Muade if she spoke pokemon channel

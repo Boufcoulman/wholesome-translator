@@ -28,8 +28,7 @@ class Birthday(NamedTuple):
 
 
 def init_birthday_db():
-    """ Initialize the database meant to gather birthday dates
-    """
+    """Initialize the database meant to gather birthday dates."""
     conn = sqlite3.connect(BIRTHDAY_DB)
     cursor = conn.cursor()
 
@@ -43,7 +42,7 @@ def init_birthday_db():
 
 
 def update_birthday(user: int, birthday: str):
-    """Add or modify the birthday of the wanted user
+    """Add or modify the birthday of the wanted user.
 
     Args:
         user: discord identifier of the user
@@ -65,7 +64,7 @@ def update_birthday(user: int, birthday: str):
 
 
 def remove_birthday(user: str):
-    """Remove the birthday of the wanted user
+    """Remove the birthday of the wanted user.
 
     Args:
         usr: discord identifier of the user
@@ -82,7 +81,7 @@ def remove_birthday(user: str):
 
 
 def get_birthdays(date: datetime.date) -> [int]:
-    """Get the users whose birthdays are on date
+    """Get the users whose birthdays are on date.
 
     Args:
         date: the date on which we want to know who were born
@@ -103,7 +102,7 @@ def get_birthdays(date: datetime.date) -> [int]:
 
 
 def get_all_birthdays() -> [Birthday]:
-    """Get all the birthdays
+    """Get all the birthdays.
 
     Returns:
         the list of bithday's tuples
@@ -123,20 +122,18 @@ def get_all_birthdays() -> [Birthday]:
 
 
 def db_date(date: datetime.date) -> str:
-    """Convert date to be stored in the database
-    """
+    """Convert date to be stored in the database."""
     return str(date.day) + '-' + str(date.month)
 
 
 def display_db_date(db_date: str) -> str:
-    """Convert db_date to be nicely displayed
-    """
+    """Convert db_date to be nicely displayed."""
     day, month = db_date.split('-')
     return day + ' ' + MOIS[int(month) - 1].capitalize()
 
 
 def date_parser(date_input: (str)):
-    """Test if input is a valide birthday date
+    """Test if input is a valide birthday date.
 
     Args:
         date_input: the input to be tested as a date
@@ -161,7 +158,7 @@ def date_parser(date_input: (str)):
 
 
 def check_if_month(month_name):
-    """Verify if month exists in letter and return associated number
+    """Verify if month exists in letter and return associated number.
 
     Args:
         month_name: the name to test as a month
