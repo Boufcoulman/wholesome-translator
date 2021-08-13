@@ -20,23 +20,20 @@ BIRTHDAY_TABLE='birthday_table'
 
 # Pokemon bot stuff
 MUDAE='Mudae#0807'
-POKEMON_CHAN='pokemon'
+POKEMON_CHAN=741394777617989785
 
 # Capitals stuff
 VIPS=[
   112233445566778899,
 ]
-CAPS_CHAN='spicy-capitals'
+CAPS_CHAN=763161687980507136
 
 # Presentation stuff
-PRES_CHAN='présentations'
+PRES_CHAN=471405622059859979
 
 #Language stuff
 LANG_CHANS = [
-  'chit-chat-in-love-and-joy',
-  'charla-en-amor-y-alegria',
-  'diskussion-in-liebe-und-freude',
-  'worldwide-shitpostingue',
+  803904527287058473,
 ]
 
 # Emoji stuff
