@@ -1,4 +1,5 @@
 .env
-memo*
-parsing_exemple_gtranslate.txt
 config.toml
+birthday.db
+debugging/
+__pycache__

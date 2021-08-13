@@ -15,6 +15,9 @@ googletrans = "*"
 requests = "*"
 asyncio = "*"
 toml = "*"
+python-dateutil = "*"
+flake8 = "*"
+autopep8 = "*"
 
 [requires]
 python_version = "3.7"
