@@ -25,7 +25,7 @@ class ReactionsCog(commands.Cog, name="Bot reactions actions"):
 
 
 async def translate_on_flag(payload, bot):
-    """Translate the reacted message if the emoji is the red flag
+    """Translate the reacted message if the emoji is the red flag.
 
     Args:
         payload: RawReactionActionEvent containing reaction infos
@@ -56,6 +56,5 @@ async def translate_on_flag(payload, bot):
 
 
 def setup(bot):
-    """Function run by the bot.load_extension() call from main file
-    """
+    """Run by the bot.load_extension() call from main file."""
     bot.add_cog(ReactionsCog(bot))
