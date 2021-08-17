@@ -17,8 +17,7 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
 
     @commands.command(name="birthday", aliases=["bd"])
     async def menu(self, ctx) -> None:
-        """Get the list of birthday commands
-        """
+        """Get the list of birthday commands."""
         await ctx.send("Afin d'utiliser le bot d'anniversaire vous pouvez"
                        "utiliser les commandes suivantes :\n"
                        "-Ajouter un anniversaire : `bd.add Mudae#0807 11-08`\n"
@@ -27,7 +26,7 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
 
     @commands.command(name="birthday.update", aliases=["bd.update", "bd.add"])
     async def update(self, ctx, user_info, *date_input) -> None:
-        """Add or update the birthday of the specified user
+        """Add or update the birthday of the specified user.
 
         Args:
             user: the user tag of the birthday person
@@ -72,7 +71,7 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
                        f" a été enregistrée pour l'utilisateur {user} !")
 
     def user_parser(self, ctx, user) -> discord.User:
-        """Verify that user exists and returns it's discord id if so
+        """Verify that user exists and returns it's discord id if so.
 
         Args:
             user: the user to try to find (id or name#discriminator)
@@ -105,8 +104,7 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
 
     @ commands.command(name="birthday.list", aliases=["bd.list"])
     async def list(self, ctx) -> None:
-        """Display the list of every birthdays registered in the database
-        """
+        """Display the list of every birthdays registered in the database."""
         # Exit if it's not from the adequate server
         if ctx.guild.id != get_var('SERVER_ID'):
             await ctx.send("You are not supposed to use this command on "
@@ -119,7 +117,6 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
                 ctx.guild.get_member(bd.user_id)
             ) + ' : ' + bd_lib.display_db_date(bd.birthday) for bd in bds
         ]
-        bds_list.sort()
         bds_display = '\n'.join(bds_list)
         await ctx.send("Liste des anniversaires enregistrés :\n"
                        f"{bds_display}")
@@ -129,7 +126,7 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
         aliases=["bd.delete", "bd.remove"]
     )
     async def delete(self, ctx, user_info) -> None:
-        """Delete targeted user from the birthday database
+        """Delete targeted user from the birthday database.
 
         Args:
             user: the user tag of the birthday person
@@ -168,6 +165,5 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
 
 
 def setup(bot):
-    """Function run by the bot.load_extension() call from main file
-    """
+    """Run by the bot.load_extension() call from main file."""
     bot.add_cog(BirthdayCmdCog(bot))
