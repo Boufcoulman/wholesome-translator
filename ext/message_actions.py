@@ -44,7 +44,7 @@ class MessagesCog(commands.Cog, name="Bot messages actions"):
         on_message_handlers = [
             auto_language_flag,
             poke_react,
-            capital_letters_cop,
+            # capital_letters_cop,
             hearts_on_presentation,
             hearts_on_bisou,
             # hearts_on_jtm,
