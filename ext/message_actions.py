@@ -44,7 +44,7 @@ class MessagesCog(commands.Cog, name="Bot messages actions"):
         on_message_handlers = [
             auto_language_flag,
             poke_react,
-            capital_letters_cop,
+            # capital_letters_cop,
             hearts_on_presentation,
             hearts_on_bisou,
             # hearts_on_jtm,
@@ -66,7 +66,8 @@ async def hearts_on_presentation(message, bot):
         return
 
     if message.channel.id == PRES_CHAN:
-        hearts = ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤎', '🤍']
+        hearts = ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤎', '🤍',
+                  get_emoji(emoji_IDs['PINKHEART_ID'], bot)]
         for heart in hearts:
             await message.add_reaction(heart)
 
@@ -260,7 +261,8 @@ def bisous_pool(bot: commands.bot.Bot) -> list:
               get_emoji(emoji_IDs['GHOSTHUG_ID'], bot),
               get_emoji(emoji_IDs['PSYKORGASM_ID'], bot),
               get_emoji(emoji_IDs['BLUSH2_ID'], bot),
-              get_emoji(emoji_IDs['BISOU_ID'], bot)]
+              get_emoji(emoji_IDs['BISOU_ID'], bot),
+              get_emoji(emoji_IDs['PINKHEART_ID'], bot)]
 
     return bisous
 
