@@ -183,27 +183,14 @@ async def poke_react(message, bot):
         'psyduck': 'PSYDUCK_ID',
         'magikarp': 'KOIKINGU_ID',
         # 'uncommon nothing': 'GRRPIN_ID',
-        'uncommon_nothing': '👍',
+        'uncommon nothing': '👍',
         'maintenance': 'GRRPIN_ID',
         'pikachu': 'PIKAWOW_ID',
         'butterfree': 'BRETAGNE_ID'
     }
 
-    rage_responses = {
-        'Super.',
-        'Oh woaw !',
-        'Ta race Mudae',
-        'Splendide...',
-        'La chance ! Merci !',
-        '.....................................................',
-        'HAHAHAHA super blague',
-        'Ok 👍'
-    }
-
     for word, emoji_name in reaction_triggers.items():
         await poke_case(word, emoji_name, message, bot)
-        if word == 'uncommon_nothing':
-            await bot.get_channel(POKEMON_CHAN).send(random.choice(rage_responses))
 
 
 async def poke_case(word, emoji_name, message, bot):
@@ -215,9 +202,21 @@ async def poke_case(word, emoji_name, message, bot):
         message: The message that was just posted on the channel
         bot: The bot
     """
+    rage_responses = [
+        'Super.',
+        'Oh woaw !',
+        'Ta race Mudae',
+        'Splendide...',
+        'La chance ! Merci !',
+        '.....................................................',
+        'HAHAHAHA super blague',
+        'Ok 👍'
+    ]
+
     if word in message.content.lower():
-        if word in ['thumbsup']:
+        if word == 'uncommon nothing':
             await message.add_reaction(emoji_name)
+            await bot.get_channel(POKEMON_CHAN).send(random.choice(rage_responses))
         else:
             await message.add_reaction(get_emoji(emoji_IDs[emoji_name], bot))
 
