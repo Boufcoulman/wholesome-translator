@@ -210,7 +210,12 @@ async def poke_case(word, emoji_name, message, bot):
         'La chance ! Merci !',
         '.....................................................',
         'HAHAHAHA super blague',
-        'Ok 👍'
+        'Ok 👍',
+        'EN MODE SPERME',
+        'Ratio',
+        'Cheh',
+        'AZMOOOOOOOL',
+        'certes'
     ]
 
     if word in message.content.lower():
