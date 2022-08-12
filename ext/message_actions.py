@@ -203,7 +203,7 @@ async def poke_react(message, bot):
     for word, emoji_name in reaction_triggers.items():
         await poke_case(word, emoji_name, message, bot)
         if word == 'uncommon_nothing':
-            await channel.send(random.choice(rage_responses))
+            await bot.get_channel(POKEMON_CHAN).send(random.choice(rage_responses))
 
 
 async def poke_case(word, emoji_name, message, bot):
