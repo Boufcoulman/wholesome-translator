@@ -182,14 +182,28 @@ async def poke_react(message, bot):
     reaction_triggers = {
         'psyduck': 'PSYDUCK_ID',
         'magikarp': 'KOIKINGU_ID',
-        'uncommon nothing': 'GRRPIN_ID',
+        # 'uncommon nothing': 'GRRPIN_ID',
+        'uncommon_nothing': '👍',
         'maintenance': 'GRRPIN_ID',
         'pikachu': 'PIKAWOW_ID',
         'butterfree': 'BRETAGNE_ID'
     }
 
+    rage_responses = {
+        'Super.',
+        'Oh woaw !',
+        'Ta race Mudae',
+        'Splendide...',
+        'La chance ! Merci !',
+        '.....................................................',
+        'HAHAHAHA super blague',
+        'Ok 👍'
+    }
+
     for word, emoji_name in reaction_triggers.items():
         await poke_case(word, emoji_name, message, bot)
+        if word == 'uncommon_nothing':
+            await channel.send(random.choice(rage_responses))
 
 
 async def poke_case(word, emoji_name, message, bot):
@@ -202,7 +216,10 @@ async def poke_case(word, emoji_name, message, bot):
         bot: The bot
     """
     if word in message.content.lower():
-        await message.add_reaction(get_emoji(emoji_IDs[emoji_name], bot))
+        if word in ['thumbsup']:
+            await message.add_reaction(emoji_name)
+        else:
+            await message.add_reaction(get_emoji(emoji_IDs[emoji_name], bot))
 
 
 def get_emoji(emoji_id: int, bot: commands.bot.Bot) -> discord.Emoji:
