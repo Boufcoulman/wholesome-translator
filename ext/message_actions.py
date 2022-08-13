@@ -16,6 +16,9 @@ PRES_CHAN = get_var('PRES_CHAN')
 # Emojis
 emoji_IDs = get_var('emoji_IDs')
 
+# Rage reactions
+RAGE_RESPONSES = get_var('RAGE_RESPONSES')
+
 # Users
 VIPS = get_var('VIPS')
 MUDAE = get_var('MUDAE')
@@ -202,26 +205,11 @@ async def poke_case(word, emoji_name, message, bot):
         message: The message that was just posted on the channel
         bot: The bot
     """
-    rage_responses = [
-        'Super.',
-        'Oh woaw !',
-        'Ta race Mudae',
-        'Splendide...',
-        'La chance ! Merci !',
-        '.....................................................',
-        'HAHAHAHA super blague',
-        'Ok 👍',
-        'EN MODE SPERME',
-        'Ratio',
-        'Cheh',
-        'AZMOOOOOOOL',
-        'certes'
-    ]
 
     if word in message.content.lower():
         if word == 'uncommon nothing':
             await message.add_reaction(emoji_name)
-            await bot.get_channel(POKEMON_CHAN).send(random.choice(rage_responses))
+            await bot.get_channel(POKEMON_CHAN).send(random.choice(RAGE_RESPONSES))
         else:
             await message.add_reaction(get_emoji(emoji_IDs[emoji_name], bot))
 

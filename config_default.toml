@@ -36,6 +36,24 @@ LANG_CHANS = [
   803904527287058473,
 ]
 
+# Rage reactions stuff
+RAGE_RESPONSES=[
+  'Super.',
+  'Oh woaw !',
+  'Ta race Mudae',
+  'Splendide...',
+  'La chance ! Merci !',
+  '.....................................................',
+  'HAHAHAHA super blague',
+  'Ok 👍',
+  'EN MODE SPERME',
+  'Ratio',
+  'Cheh',
+  'AZMOOOOOOOL',
+  'certes',
+  '🤠'
+]
+
 # Emoji stuff
 [emoji_IDs]
 PSYDUCK_ID=751143555904307310
