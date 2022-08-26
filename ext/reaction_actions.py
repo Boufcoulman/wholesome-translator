@@ -55,6 +55,6 @@ async def translate_on_flag(payload, bot):
             await user.dm_channel.send(translate.translate_error_msg)
 
 
-def setup(bot):
+async def setup(bot):
     """Run by the bot.load_extension() call from main file."""
-    bot.add_cog(ReactionsCog(bot))
+    await bot.add_cog(ReactionsCog(bot))

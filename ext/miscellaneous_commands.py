@@ -123,7 +123,7 @@ class MiscCmdCog(commands.Cog, name="Miscellaneous bot commands"):
             await ctx.send(quote_translation.msg)
 
 
-def setup(bot):
+async def setup(bot):
     """Function run by the bot.load_extension() call from main file
     """
-    bot.add_cog(MiscCmdCog(bot))
+    await bot.add_cog(MiscCmdCog(bot))

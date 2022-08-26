@@ -16,6 +16,9 @@ PRES_CHAN = get_var('PRES_CHAN')
 # Emojis
 emoji_IDs = get_var('emoji_IDs')
 
+# Rage reactions
+RAGE_RESPONSES = get_var('RAGE_RESPONSES')
+
 # Users
 VIPS = get_var('VIPS')
 MUDAE = get_var('MUDAE')
@@ -182,7 +185,8 @@ async def poke_react(message, bot):
     reaction_triggers = {
         'psyduck': 'PSYDUCK_ID',
         'magikarp': 'KOIKINGU_ID',
-        'uncommon nothing': 'GRRPIN_ID',
+        # 'uncommon nothing': 'GRRPIN_ID',
+        'uncommon nothing': '👍',
         'maintenance': 'GRRPIN_ID',
         'pikachu': 'PIKAWOW_ID',
         'butterfree': 'BRETAGNE_ID'
@@ -201,8 +205,13 @@ async def poke_case(word, emoji_name, message, bot):
         message: The message that was just posted on the channel
         bot: The bot
     """
+
     if word in message.content.lower():
-        await message.add_reaction(get_emoji(emoji_IDs[emoji_name], bot))
+        if word == 'uncommon nothing':
+            await message.add_reaction(emoji_name)
+            await bot.get_channel(POKEMON_CHAN).send(random.choice(RAGE_RESPONSES))
+        else:
+            await message.add_reaction(get_emoji(emoji_IDs[emoji_name], bot))
 
 
 def get_emoji(emoji_id: int, bot: commands.bot.Bot) -> discord.Emoji:
@@ -267,7 +276,7 @@ def bisous_pool(bot: commands.bot.Bot) -> list:
     return bisous
 
 
-def setup(bot):
+async def setup(bot):
     """Function run by The bot.load_extension() call from main file
     """
-    bot.add_cog(MessagesCog(bot))
+    await bot.add_cog(MessagesCog(bot))

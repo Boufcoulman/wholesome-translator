@@ -11,7 +11,7 @@ USER_ID_RE = re.compile(r'\d{18}')
 ZAMI_ROLE = get_var('ZAMI_ROLE')
 
 
-class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
+class BirthdayCmdCog(commands.Cog, name="Birthday commands"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -167,7 +167,7 @@ class BirthdayCmdCog(commands.Cog, name="Translate bot commands"):
                            "ou taggez directement la personne @personne !")
 
 
-def setup(bot):
+async def setup(bot):
     """Function run by the bot.load_extension() call from main file
     """
-    bot.add_cog(BirthdayCmdCog(bot))
+    await bot.add_cog(BirthdayCmdCog(bot))
