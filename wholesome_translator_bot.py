@@ -6,6 +6,7 @@ import traceback
 from discord.ext import commands
 from lib.load_var import get_var
 import discord
+import asyncio
 
 from lib.birthday_lib import init_birthday_db
 
@@ -23,6 +24,7 @@ log.debug('Creating bot...')
 # Add intent in order to gather member datas
 intents = discord.Intents.default()
 intents.members = True
+intents.message_content = True
 bot = commands.Bot(command_prefix=CMD_PREFIX, intents=intents)
 
 # Commands extensions
@@ -45,7 +47,7 @@ if __name__ == '__main__':
     # Load of commands extentions
     for extension in initial_extensions:
         try:
-            bot.load_extension(extension)
+            asyncio.run(bot.load_extension(extension))
         except Exception:
             print(f'Failed to load extension {extension}.', file=sys.stderr)
             traceback.print_exc()

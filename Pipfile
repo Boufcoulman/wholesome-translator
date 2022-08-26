@@ -1,12 +1,7 @@
 [[source]]
-name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-
-[dev-packages]
-flake8 = "*"
-wemake-python-styleguide = "*"
-isort = "*"
+name = "pypi"
 
 [packages]
 discord = "*"
@@ -16,8 +11,11 @@ requests = "*"
 asyncio = "*"
 toml = "*"
 python-dateutil = "*"
+
+[dev-packages]
 flake8 = "*"
-autopep8 = "*"
+wemake-python-styleguide = "*"
+isort = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.10"

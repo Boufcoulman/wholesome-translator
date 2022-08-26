@@ -276,7 +276,7 @@ def bisous_pool(bot: commands.bot.Bot) -> list:
     return bisous
 
 
-def setup(bot):
+async def setup(bot):
     """Function run by The bot.load_extension() call from main file
     """
-    bot.add_cog(MessagesCog(bot))
+    await bot.add_cog(MessagesCog(bot))
