@@ -1,5 +1,5 @@
 import sqlite3
-from typing import NamedTuple, List, Optional
+from typing import NamedTuple
 from dateutil.parser import parse
 import datetime
 from lib.load_var import get_var
@@ -26,7 +26,7 @@ MONTHS = (
 )
 
 
-def get_month(number: int) -> Optional[str]:
+def get_month(number: int) -> str | None:
     """Get the name of the month from its number.
 
     Args:
@@ -46,7 +46,7 @@ def get_month(number: int) -> Optional[str]:
         return None
 
 
-def get_month_number(month: str) -> Optional[int]:
+def get_month_number(month: str) -> int | None:
     """Get the number of the month from its French name.
 
     Args:
@@ -131,7 +131,7 @@ def remove_birthday(user: str) -> None:
     conn.close()
 
 
-def get_birthdays(date: datetime.date) -> List[int]:
+def get_birthdays(date: datetime.date) -> list[int]:
     """Get the users whose birthdays are on given date.
 
     Args:
@@ -151,7 +151,7 @@ def get_birthdays(date: datetime.date) -> List[int]:
     return [user_record[0] for user_record in cursor]
 
 
-def get_all_birthdays() -> List[Birthday]:
+def get_all_birthdays() -> list[Birthday]:
     """Get all the birthdays.
 
     Returns:
@@ -202,7 +202,7 @@ def display_db_date(date_db: str) -> str:
     return f'{day} {month_name}'.title()
 
 
-def date_parser(date_input: str) -> Optional[str]:
+def date_parser(date_input: str) -> str | None:
     """Test if input is a valid birthday date.
 
     Args:
