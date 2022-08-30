@@ -122,7 +122,6 @@ class BirthdayCmdCog(commands.Cog, name="Birthday commands"):
                 ctx.guild.get_member(bd.user_id)
             ) + ' : ' + bd_lib.display_db_date(bd.birthday) for bd in bds
         ]
-        bds_list.sort()
         bds_display = '\n'.join(bds_list)
         await ctx.send("Liste des anniversaires enregistrés :\n"
                        f"{bds_display}")
