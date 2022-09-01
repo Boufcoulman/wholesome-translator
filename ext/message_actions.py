@@ -26,7 +26,7 @@ MUDAE = get_var('MUDAE')
 EMOJI_RE = re.compile(r'\W*:\w+:\W*')
 
 
-class MessagesCog(commands.Cog, name="Bot messages actions"):
+class MessagesCog(commands.Cog, name="Bot messages actions"):  # type:ignore
     def __init__(self, bot):
         self.bot = bot
 
@@ -236,7 +236,7 @@ def is_url(string: str) -> bool:
         true if the word has a scheme and a domain
     """
     parsed = urlparse(string)
-    return parsed.scheme and parsed.netloc
+    return bool(parsed.scheme and parsed.netloc)
 
 
 def is_lowercase(word: str) -> bool:

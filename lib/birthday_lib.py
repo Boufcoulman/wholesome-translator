@@ -114,7 +114,7 @@ def update_birthday(user: int, birthday: str) -> None:
     conn.close()
 
 
-def remove_birthday(user: str) -> None:
+def remove_birthday(user: int) -> None:
     """Remove the birthday of the wanted user.
 
     Args:
