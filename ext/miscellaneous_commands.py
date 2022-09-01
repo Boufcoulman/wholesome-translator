@@ -7,7 +7,7 @@ import traceback
 import sys
 
 
-class MiscCmdCog(commands.Cog, name="Miscellaneous bot commands"):
+class MiscCmdCog(commands.Cog, name="Miscellaneous bot commands"):  # type:ignore
     def __init__(self, bot):
         self.bot = bot
 

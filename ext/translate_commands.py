@@ -9,7 +9,7 @@ from lib.load_var import get_var
 emoji_IDs = get_var('emoji_IDs')
 
 
-class TranslateCmdCog(commands.Cog, name="Translate bot commands"):
+class TranslateCmdCog(commands.Cog, name="Translate bot commands"):  # type:ignore
     def __init__(self, bot):
         self.bot = bot
 
