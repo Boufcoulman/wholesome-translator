@@ -8,6 +8,8 @@ from discord.ext import commands
 from lib import birthday_lib as bd_lib
 from lib.load_var import get_var
 
+BIRTHDAY_DB = get_var('BIRTHDAY_DB')
+
 USER_TAG_RE = re.compile(r'.*#\d{4}')
 USER_ID_RE = re.compile(r'\d{18}')
 
@@ -24,6 +26,7 @@ class BirthdayCmdCog(commands.Cog, name='Birthday commands'):  # type:ignore
             bot: the Discord bot that will run the commands
         """
         self.bot = bot
+        self.database = bd_lib.DateDb(BIRTHDAY_DB)
 
     @commands.command(name='birthday', aliases=['bd'])
     async def menu(self, ctx) -> None:
@@ -84,11 +87,13 @@ class BirthdayCmdCog(commands.Cog, name='Birthday commands'):  # type:ignore
             return
 
         # Update database
-        bd_lib.update_birthday(user.id, date)
-        await ctx.send(
-            f"La date d'anniversaire {bd_lib.display_db_date(date)}"
-            f" a été enregistrée pour l'utilisateur {user} !"
-        )
+        with self.database as database:
+            database.update_birthday(user.id, date)
+
+        message = """La date d'anniversaire {0} a été enregistrée \
+        pour l'utilisateur {1} !"""
+
+        await ctx.send(message.format(bd_lib.display_db_date(date), user))
 
     def user_parser(self, ctx, user) -> discord.User:
         """Verify that user exists and returns its discord id.
@@ -136,12 +141,10 @@ class BirthdayCmdCog(commands.Cog, name='Birthday commands'):  # type:ignore
                            f"this server : {str(ctx.guild)}")
             return
 
-        bds = bd_lib.get_all_birthdays()
-        bds_list = [
-            str(
-                ctx.guild.get_member(bd.user_id)
-            ) + ' : ' + bd_lib.display_db_date(bd.birthday) for bd in bds
-        ]
+        with self.database as database:
+            bds = database.get_all_birthdays()
+
+        bds_list = (bd.format(ctx.guild.get_member) for bd in bds)
         bds_display = '\n'.join(bds_list)
         await ctx.send("Liste des anniversaires enregistrés :\n"
                        f"{bds_display}")
@@ -176,7 +179,9 @@ class BirthdayCmdCog(commands.Cog, name='Birthday commands'):  # type:ignore
         user = self.user_parser(ctx, user_info)
         if user:
             # Update database
-            bd_lib.remove_birthday(user.id)
+            with self.database as database:
+                database.remove_birthday(user.id)
+
             await ctx.send(
                 f"L'anniversaire de l'utilisateur {user} a été retiré !"
             )

@@ -1,19 +1,17 @@
 """Functions to manage the birthday functionalities in the database."""
 
 import datetime
+import logging
 import sqlite3
-from typing import NamedTuple
+from contextlib import AbstractContextManager
+from typing import Any, Callable, NamedTuple
 
 from dateutil.parser import ParserError
 from dateutil.parser import parse as parse_date
 
-from lib.load_var import get_var
+log = logging.getLogger(__name__)
 
 # https://www.tutorialspoint.com/How-to-store-and-retrieve-date-into-Sqlite3-database-using-Python
-
-# Database stored locally
-BIRTHDAY_DB = get_var('BIRTHDAY_DB')
-BIRTHDAY_TABLE = get_var('BIRTHDAY_TABLE')
 
 MONTHS = (
     'janvier',
@@ -84,109 +82,166 @@ class Birthday(NamedTuple):
     user_id: int
     birthday: str
 
+    def format(self, get_name: Callable[[int], str]) -> str:
+        """Format the birthday into a redable form.
 
-def init_birthday_db() -> None:
-    """Initialize the database meant to gather birthday dates."""
-    conn = sqlite3.connect(BIRTHDAY_DB)
-    cursor = conn.cursor()
+        Args:
+            get_name: a function that gives a readable name from an ID
 
-    # Create birthday table if not existing
-    cursor.execute(f"""
-    CREATE TABLE IF NOT EXISTS {BIRTHDAY_TABLE} (
-        user INTEGER PRIMARY KEY,
-        birthday TEXT
-    )
-    """)
-
-
-def update_birthday(user: int, birthday: str) -> None:
-    """Add or modify the birthday of the wanted user.
-
-    Args:
-        user: discord identifier of the user
-        birthday: birthday date of the user ('dd-mm')
-    """
-    conn = sqlite3.connect(BIRTHDAY_DB)
-    cursor = conn.cursor()
-
-    # Update birthday for specified user
-    request = f"""INSERT OR REPLACE INTO {BIRTHDAY_TABLE}
-                  (user, birthday) VALUES (?,?)"""
-    cursor.execute(request, (user, birthday))
-    conn.commit()
-    conn.close()
+        Returns:
+            the formatted name
+        """
+        user = get_name(self.user_id)
+        date = display_db_date(self.birthday)
+        return f'{user} : {date}'
 
 
-def remove_birthday(user: int) -> None:
-    """Remove the birthday of the wanted user.
+class DbContextManager(AbstractContextManager[Any]):
+    """Generic context manager for a sqlite3 connection."""
 
-    Args:
-        user: discord identifier of the user
-    """
-    conn = sqlite3.connect(BIRTHDAY_DB)
-    cursor = conn.cursor()
+    def __init__(self, database: str):
+        """Set the database path.
 
-    # Delete birthday for specified user
-    request = f"""
-    DELETE FROM {BIRTHDAY_TABLE} WHERE user=?
-    """
-    cursor.execute(request, (user,))
-    conn.commit()
-    conn.close()
+        Args:
+            database: path to the database
+        """
+        self.database = database
+        self.conn: sqlite3.Connection | None = None
 
+    def __enter__(self) -> Any:
+        """Initialize the connection.
 
-def get_birthdays(date: datetime.date) -> list[int]:
-    """Get the users whose birthdays are on given date.
+        Returns:
+            the DateDb object with an open connection
+        """
+        self.conn = sqlite3.connect(self.database)
+        return self
 
-    Args:
-        date: the date on which we want to know who were born
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Commit and close the connection.
 
-    Returns:
-        the list of users who were born on date, empty if no users were born
-    """
-    conn = sqlite3.connect(BIRTHDAY_DB)
-    cursor = conn.cursor()
+        Args:
+            exc_type: type of the exception raised if any
+            exc_value: exception raised if any
+            traceback: trace of the exception raised if any
+        """
+        if not self.conn:
+            return
 
-    # Get the list of birthdays
-    request = f"""
-        SELECT user FROM {BIRTHDAY_TABLE} WHERE birthday=?
-    """
-    cursor.execute(request, (db_date(date),))
-
-    return [user_record[0] for user_record in cursor]
-
-
-def get_all_birthdays() -> list[Birthday]:
-    """Get all the birthdays.
-
-    Returns:
-        the list of bithday's tuples
-    """
-    conn = sqlite3.connect(BIRTHDAY_DB)
-    cursor = conn.cursor()
-
-    # Get the list of users
-    cursor.execute(f"""
-    SELECT user, birthday FROM {BIRTHDAY_TABLE}
-    ORDER BY birthday
-    """)
-
-    return [Birthday(*record) for record in cursor]
+        if exc_value:
+            log.error(
+                'An error happend within the DateDb context, rolling back',
+                stack_info=True,
+            )
+            self.conn.rollback()
+        else:
+            log.info('Committing changes')
+            self.conn.commit()
+        self.conn.close()
 
 
-def db_date(date: datetime.date) -> str:
-    """Convert date to be stored in the database.
+class DateDb(DbContextManager):
+    """Context manager to manipulate the birthdays in the database."""
 
-    Args:
-        date: the date to convert to string
+    no_connection_error = 'No active DB connection.'
 
-    Returns:
-        the date converted to the format used in the database
+    def init_birthday_db(self) -> None:
+        """Initialize the database meant to gather birthday dates."""
+        if not self.conn:
+            log.warning(self.no_connection_error)
+            return
 
-    >>> db_date(datetime.date.fromisoformat('2022-01-01'))
-    '2022-01-01'
-    """
-    return date.isoformat()
+        cursor = self.conn.cursor()
+
+        # Create birthday table if not existing
+        request = """
+        CREATE TABLE IF NOT EXISTS birthday_table (
+            user INTEGER PRIMARY KEY,
+            birthday TEXT
+        )
+        """
+        cursor.execute(request)
+
+    def update_birthday(self, user: int, birthday: str) -> None:
+        """Add or modify the birthday of the wanted user.
+
+        Args:
+            user: discord identifier of the user
+            birthday: birthday date of the user ('dd-mm')
+        """
+        if not self.conn:
+            log.warning(self.no_connection_error)
+            return
+
+        cursor = self.conn.cursor()
+
+        # Update birthday for specified user
+        request = """INSERT OR REPLACE INTO birthday_table
+                    (user, birthday) VALUES (?,?)"""
+        cursor.execute(request, (user, birthday))
+
+    def remove_birthday(self, user: int) -> None:
+        """Remove the birthday of the wanted user.
+
+        Args:
+            user: discord identifier of the user
+        """
+        if not self.conn:
+            log.warning(self.no_connection_error)
+            return
+
+        cursor = self.conn.cursor()
+
+        # Delete birthday for specified user
+        request = """
+        DELETE FROM birthday_table WHERE user=?
+        """
+        cursor.execute(request, (user,))
+
+    def get_birthdays(self, date: datetime.date) -> list[int]:
+        """Get the users whose birthdays are on given date.
+
+        Args:
+            date: the date on which we want to know who were born
+
+        Returns:
+            the list of users who were born on date,
+            empty if no users were born
+        """
+        if not self.conn:
+            log.warning(self.no_connection_error)
+            return []
+
+        cursor = self.conn.cursor()
+
+        # Get the list of birthdays
+        request = """
+            SELECT user FROM birthday_table WHERE birthday=?
+        """
+        cursor.execute(request, (date.isoformat(),))
+
+        return [user_record[0] for user_record in cursor]
+
+    def get_all_birthdays(self) -> list[Birthday]:
+        """Get all the birthdays.
+
+        Returns:
+            the list of bithday's tuples
+        """
+        if not self.conn:
+            log.warning(self.no_connection_error)
+            return []
+
+        cursor = self.conn.cursor()
+
+        # Get the list of users
+        request = """
+        SELECT user, birthday FROM birthday_table
+        ORDER BY birthday
+        """
+        cursor.execute(request)
+
+        return [Birthday(*record) for record in cursor]
 
 
 def display_db_date(date_db: str) -> str:
@@ -240,4 +295,4 @@ def date_parser(date_input: str) -> str | None:
         date = parse_date(' '.join(date_input), dayfirst=True, yearfirst=False)
     except (ParserError, OverflowError):
         return None
-    return db_date(date.date())
+    return date.date().isoformat()
