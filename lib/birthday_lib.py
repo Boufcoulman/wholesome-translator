@@ -1,7 +1,12 @@
+"""Functions to manage the birthday functionalities in the database."""
+
+import datetime
 import sqlite3
 from typing import NamedTuple
-from dateutil.parser import parse
-import datetime
+
+from dateutil.parser import ParserError
+from dateutil.parser import parse as parse_date
+
 from lib.load_var import get_var
 
 # https://www.tutorialspoint.com/How-to-store-and-retrieve-date-into-Sqlite3-database-using-Python
@@ -105,11 +110,9 @@ def update_birthday(user: int, birthday: str) -> None:
     cursor = conn.cursor()
 
     # Update birthday for specified user
-    cursor.execute(
-        f"""INSERT OR REPLACE INTO {BIRTHDAY_TABLE}
-        (user, birthday) VALUES (?,?)""",
-        (user, birthday),
-    )
+    request = f"""INSERT OR REPLACE INTO {BIRTHDAY_TABLE}
+                  (user, birthday) VALUES (?,?)"""
+    cursor.execute(request, (user, birthday))
     conn.commit()
     conn.close()
 
@@ -124,9 +127,10 @@ def remove_birthday(user: int) -> None:
     cursor = conn.cursor()
 
     # Delete birthday for specified user
-    cursor.execute(f"""
-    DELETE FROM {BIRTHDAY_TABLE} WHERE user='{user}'
-    """)
+    request = f"""
+    DELETE FROM {BIRTHDAY_TABLE} WHERE user=?
+    """
+    cursor.execute(request, (user,))
     conn.commit()
     conn.close()
 
@@ -144,9 +148,10 @@ def get_birthdays(date: datetime.date) -> list[int]:
     cursor = conn.cursor()
 
     # Get the list of birthdays
-    cursor.execute(f"""
-    SELECT user FROM {BIRTHDAY_TABLE} WHERE birthday='{db_date(date)}'
-    """)
+    request = f"""
+        SELECT user FROM {BIRTHDAY_TABLE} WHERE birthday=?
+    """
+    cursor.execute(request, (db_date(date),))
 
     return [user_record[0] for user_record in cursor]
 
@@ -232,7 +237,7 @@ def date_parser(date_input: str) -> str | None:
     # Month in full letter handling
     date_input = [str(get_month_number(elem) or elem) for elem in date_input]
     try:
-        date = parse(' '.join(date_input), dayfirst=True, yearfirst=False)
-    except Exception:
+        date = parse_date(' '.join(date_input), dayfirst=True, yearfirst=False)
+    except (ParserError, OverflowError):
         return None
     return db_date(date.date())
