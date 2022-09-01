@@ -4,18 +4,25 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-discord = "*"
 python-dotenv = "*"
 googletrans = "*"
 requests = "*"
 asyncio = "*"
 toml = "*"
 python-dateutil = "*"
+discord = {py = "*"}
 
 [dev-packages]
 flake8 = "*"
-wemake-python-styleguide = "*"
+ipython = "*"
 isort = "*"
+mypy = "*"
+python-lsp-server = {extras = ["all"], version = "*"}
+wemake-python-styleguide = "*"
+pylsp-mypy = "*"
+types-requests = "*"
+types-python-dateutil = "*"
+types-toml = "*"
 
 [requires]
 python_version = "3.10"

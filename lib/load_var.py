@@ -12,7 +12,7 @@ log.addHandler(logging.StreamHandler())
 
 log.debug('Loading config...')
 try:
-    config_vars = toml.load(var_path)
+    config_vars = toml.load(var_path or 'config_default.toml')
 except FileNotFoundError:
     log.critical('File {0} not found :(.)'.format(var_path))
     raise

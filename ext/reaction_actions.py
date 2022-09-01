@@ -3,7 +3,7 @@ from discord.ext import commands
 import asyncio
 
 
-class ReactionsCog(commands.Cog, name="Bot reactions actions"):
+class ReactionsCog(commands.Cog, name="Bot reactions actions"):  # type:ignore
     def __init__(self, bot):
         self.bot = bot
 
