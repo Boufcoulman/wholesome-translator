@@ -233,6 +233,6 @@ def date_parser(date_input: str) -> str | None:
     date_input = [str(get_month_number(elem) or elem) for elem in date_input]
     try:
         date = parse(' '.join(date_input), dayfirst=True, yearfirst=False)
-    except OverflowError:
+    except Exception:
         return None
     return db_date(date.date())
