@@ -1,14 +1,14 @@
 """Discord bot that interacts with the Wholesome discord."""
+import asyncio
 import logging
 import sys
 import traceback
 
-from discord.ext import commands
-from lib.load_var import get_var
 import discord
-import asyncio
+from discord.ext import commands
 
-from lib.birthday_lib import init_birthday_db
+from lib.birthday_lib import DateDb
+from lib.load_var import get_var
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -16,9 +16,11 @@ log.addHandler(logging.StreamHandler())
 
 TOKEN = get_var('DISCORD_TOKEN')
 CMD_PREFIX = get_var('CMD_PREFIX', '%')
+BIRTHDAY_DB = get_var('BIRTHDAY_DB')
 
 log.info('Initialisation de la base de données anniversaire...')
-init_birthday_db()
+with DateDb(BIRTHDAY_DB) as database:
+    database.init_birthday_db()
 
 log.debug('Creating bot...')
 # Add intent in order to gather member datas
