@@ -1,6 +1,7 @@
 """Define commands for the birthday management functionalities."""
 
 import re
+from functools import wraps
 from typing import Any
 
 import discord
@@ -36,9 +37,11 @@ def message_command(*args: Any, **kwargs: Any) -> Any:
         Returns:
             an async command that sends as message the return value
         """
+
+        @commands.command(*args, **kwargs)
+        @wraps(command)
         async def decorated(self, ctx, *arguments) -> None:  # noqa: WPS430
-            cmd = commands.command(*args, **kwargs)(command)
-            message = await cmd(self, ctx, *arguments)
+            message = await command(self, ctx, *arguments)
             await ctx.send(message)
 
         return decorated
