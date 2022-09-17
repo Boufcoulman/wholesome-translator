@@ -21,4 +21,4 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 #
 # m h  dom mon dow   command
-30 7 * * * /home/pi/.virtualenvs/wholesome-translator-obNgseaS/bin/python /home/pi/wholesome-translator/announce_bot.py
+30 7 * * * /home/ubuntu/.local/share/virtualenvs/wholesome-translator-fsrheil2/bin/python /home/ubuntu/wholesome-translator/announce_bot.py
