@@ -183,20 +183,23 @@ async def poke_react(message, bot):
         return
 
     reaction_triggers = {
-        'psyduck': 'PSYDUCK_ID',
-        'magikarp': 'KOIKINGU_ID',
+        ':psyduck: psyduck': 'PSYDUCK_ID',
+        ':magikarp: magikarp': 'KOIKINGU_ID',
         # 'uncommon nothing': 'GRRPIN_ID',
         'uncommon nothing': '👍',
         'maintenance': 'GRRPIN_ID',
-        'pikachu': 'PIKAWOW_ID',
-        'butterfree': 'BRETAGNE_ID'
+        ':pikachu: pikachu': 'PIKAWOW_ID',
+        ':butterfree: butterfree': 'BRETAGNE_ID',
+        ':piplup: piplup': 'TIPLOUFSHINE_ID',
+        'how did you do that?!': '👍',
+        'belong to our dimension': '👍',
     }
 
-    for word, emoji_name in reaction_triggers.items():
-        await poke_case(word, emoji_name, message, bot)
+    for sentence, emoji_name in reaction_triggers.items():
+        await poke_case(sentence, emoji_name, message, bot)
 
 
-async def poke_case(word, emoji_name, message, bot):
+async def poke_case(sentence, emoji_name, message, bot):
     """Test if word is in message. If so add reaction identified by emoji_name.
 
     Args:
@@ -206,10 +209,13 @@ async def poke_case(word, emoji_name, message, bot):
         bot: The bot
     """
 
-    if word in message.content.lower():
-        if word == 'uncommon nothing':
+    if sentence in message.content.lower():
+        if sentence == 'uncommon nothing':
             await message.add_reaction(emoji_name)
             await bot.get_channel(POKEMON_CHAN).send(random.choice(RAGE_RESPONSES))
+        elif sentence == 'how did you do that?!' or sentence == 'belong to our dimension':
+            await message.add_reaction(emoji_name)
+            await bot.get_channel(POKEMON_CHAN).send('En mode ZBRRRRRRRRRRRRRRRRRRRRRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         else:
             await message.add_reaction(get_emoji(emoji_IDs[emoji_name], bot))
 
