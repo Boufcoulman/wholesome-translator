@@ -16,7 +16,6 @@ EGIDE_ROLE=471458252354355241
 
 # Birthday infos
 BIRTHDAY_DB='/home/pi/wholesome-translator/birthday.db'
-BIRTHDAY_TABLE='birthday_table'
 
 # Pokemon bot stuff
 MUDAE='Mudae#0807'
