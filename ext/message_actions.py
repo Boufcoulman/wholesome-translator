@@ -183,16 +183,18 @@ async def poke_react(message, bot):
         return
 
     reaction_triggers = {
-        ':psyduck: psyduck': 'PSYDUCK_ID',
-        ':magikarp: magikarp': 'KOIKINGU_ID',
+        'Psyduck': 'PSYDUCK_ID',
+        'Magikarp': 'KOIKINGU_ID',
         # 'uncommon nothing': 'GRRPIN_ID',
         'uncommon nothing': '👍',
         'maintenance': 'GRRPIN_ID',
-        ':pikachu: pikachu': 'PIKAWOW_ID',
-        ':butterfree: butterfree': 'BRETAGNE_ID',
-        ':piplup: piplup': 'TIPLOUFSHINE_ID',
-        'how did you do that?!': '👍',
+        'Pikachu': 'PIKAWOW_ID',
+        'Butterfree': 'BRETAGNE_ID',
+        'Piplup': 'TIPLOUFSHINE_ID',
+        'HOW DID YOU DO THAT?!': '👍',
         'belong to our dimension': '👍',
+        'LEGENDARY': '👍',
+        'ULTRA BEAST': '👍',
     }
 
     for sentence, emoji_name in reaction_triggers.items():
@@ -209,11 +211,11 @@ async def poke_case(sentence, emoji_name, message, bot):
         bot: The bot
     """
 
-    if sentence in message.content.lower():
+    if sentence in message.content:
         if sentence == 'uncommon nothing':
             await message.add_reaction(emoji_name)
             await bot.get_channel(POKEMON_CHAN).send(random.choice(RAGE_RESPONSES))
-        elif sentence == 'how did you do that?!' or sentence == 'belong to our dimension':
+        elif sentence == 'how did you do that?!' or sentence == 'belong to our dimension' or sentence == 'LEGENDARY' or sentence == 'ULTRA BEAST':
             await message.add_reaction(emoji_name)
             await bot.get_channel(POKEMON_CHAN).send('En mode ZBRRRRRRRRRRRRRRRRRRRRRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         else:
