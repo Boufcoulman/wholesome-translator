@@ -2,6 +2,7 @@
 
 import re
 from functools import wraps
+from textwrap import dedent
 from typing import Any
 
 import discord
@@ -42,7 +43,7 @@ def message_command(*args: Any, **kwargs: Any) -> Any:
         @wraps(command)
         async def decorated(self, ctx, *arguments) -> None:  # noqa: WPS430
             message = await command(self, ctx, *arguments)
-            await ctx.send(message)
+            await ctx.send(dedent(message))
 
         return decorated
     return decorator
@@ -70,11 +71,11 @@ class BirthdayCmdCog(commands.Cog, name='Birthday commands'):  # type:ignore
         Returns:
             message to send
         """
-        message = """Afin d'utiliser le bot d'anniversaire vous pouvez\
-        utiliser les commandes suivantes :
-        - Ajouter un anniversaire : `bd.add Mudae#0807 11-08
-        - Supprimer un anniversaire : `bd.delete Mudae#0807
-        - Afficher les anniversaire : `bd.list `
+        message = """\
+        Afin d'utiliser le bot d'anniversaire vous pouvez utiliser les commandes suivantes :
+        - Ajouter un anniversaire : `bd.add Mudae#0807 11-08`
+        - Supprimer un anniversaire : `bd.delete Mudae#0807`
+        - Afficher les anniversaire : `bd.list`
         """
         return message  # noqa: WPS:331
 
@@ -94,37 +95,36 @@ class BirthdayCmdCog(commands.Cog, name='Birthday commands'):  # type:ignore
         """
         # Exit if it's not from the adequate server
         if ctx.guild.id != get_var('SERVER_ID'):
-            return f"""You are not supposed to use this command on \
-            this server : {ctx.guild}"""
+            return f"""You are not supposed to use this command on this server : {ctx.guild}"""
 
         # Exit if the user has not the adequate role
-        if ctx.author not in ctx.guild.get_role(ZAMI_ROLE).members:
+        zamis = ctx.guild.get_role(ZAMI_ROLE)
+        if not zamis or ctx.author not in zamis.members:
             return "You don't have the adequate role to execute this command."
 
         # Check if the user is valid
         user = self.user_parser(ctx, user_info)
         if not user:
             cmd_prefix = self.bot.command_prefix
-            return f"""Mauvaise utilisation de la commande, \
-            l'utilisateur {user_info} n'existe pas.
+            return f"""\
+            Mauvaise utilisation de la commande, l'utilisateur {user_info} n'existe pas.
             Exemple : `{cmd_prefix}bd.update Mudae#0807 27-05`
-            Vérifiez la syntaxe Nom#1234, ou le discord id, \
-            ou taggez directement la personne @personne !"""
+            Vérifiez la syntaxe Nom#1234, ou le discord id, ou taggez directement la @personne !
+            """
 
         # Check if the date is valid
         date = bd_lib.date_parser('-'.join(date_input))
         if not date:
-            message = """Le format de date n'est pas reconnu !
-            Pour ajouter un anniversaire le 20 mars, \
-            il faut écrire `20-03` ou `20 mars`."""
+            message = """\
+            Le format de date n'est pas reconnu !
+            Pour ajouter un anniversaire le 20 mars, il faut écrire `20-03` ou `20 mars`."""
             return message  # noqa: WPS:331
 
         # Update database
         with self.database as database:
             database.update_birthday(user.id, date)
 
-        message = """La date d'anniversaire {0} a été enregistrée \
-        pour l'utilisateur {1} !"""
+        message = """La date d'anniversaire {0} a été enregistrée pour l'utilisateur {1} !"""
 
         return message.format(bd_lib.display_db_date(date), user)
 
@@ -172,16 +172,14 @@ class BirthdayCmdCog(commands.Cog, name='Birthday commands'):  # type:ignore
         """
         # Exit if it's not from the adequate server
         if ctx.guild.id != get_var('SERVER_ID'):
-            return f"""You are not supposed to use this command on \
-            this server : {ctx.guild}"""
+            return f"""You are not supposed to use this command on this server : {ctx.guild}"""
 
         with self.database as database:
             bds = database.get_all_birthdays()
 
         bds_list = (bd.format(ctx.guild.get_member) for bd in bds)
         bds_display = '\n'.join(bds_list)
-        return f"""Liste des anniversaires enregistrés :
-        {bds_display}"""
+        return "Liste des anniversaires enregistrés :\n" + bds_display
 
     @message_command(
         name='birthday.delete',
@@ -202,11 +200,11 @@ class BirthdayCmdCog(commands.Cog, name='Birthday commands'):  # type:ignore
         """
         # Exit if it's not from the adequate server
         if ctx.guild.id != get_var('SERVER_ID'):
-            return f"""You are not supposed to use this command on \
-            this server : {ctx.guild}"""
+            return f"""You are not supposed to use this command on this server : {ctx.guild}"""
 
         # Exit if the user has not the adequate role
-        if ctx.author not in ctx.guild.get_role(ZAMI_ROLE).members:
+        zamis = ctx.guild.get_role(ZAMI_ROLE)
+        if not zamis or ctx.author not in zamis.members:
             return "You don't have the role to execute this command."
 
         # Check if the user is valid
@@ -220,11 +218,10 @@ class BirthdayCmdCog(commands.Cog, name='Birthday commands'):  # type:ignore
 
         # Yell at discord user
         cmd_prefix = self.bot.command_prefix
-        return f"""Mauvaise utilisation de la commande, \
-        l'utilisateur {user_info} n'existe pas.
+        return f"""\
+        Mauvaise utilisation de la commande, l'utilisateur {user_info} n'existe pas.
         Exemple : `{cmd_prefix}bd.delete Mudae#0807`
-        Vérifiez la syntaxe Nom#1234, ou le discord id, \
-        "ou taggez directement la personne @personne !"""
+        Vérifiez la syntaxe Nom#1234, ou le discord id, ou taggez directement la @personne !"""
 
 
 async def setup(bot):
