@@ -17,6 +17,7 @@ log.addHandler(logging.StreamHandler())
 SERVER_ID = get_var('SERVER_ID')
 BIRTHDAY_CHAN = get_var('BIRTHDAY_CHAN')
 INSPIRE_CHAN = get_var('INSPIRE_CHAN')
+BIRTHDAY_DB = get_var('BIRTHDAY_DB')
 
 TOKEN = get_var('DISCORD_TOKEN')
 CMD_PREFIX = get_var('CMD_PREFIX', '%')
@@ -33,24 +34,26 @@ today = datetime.date.today()
 # If we're on monday, Inspire
 INSPIRE = today.weekday() == 0
 
-# Get list of user in current date
-BD_USERS = bd_lib.get_birthdays(today)
-# Get also 29-02 if it's the 28-02 and it's a leap year
-if today.month == 2 and today.day == 28:
-    if (today.year % 4) == 0:
-        if (today.year % 100) == 0:
-            if (today.year % 400) == 0:
-                leap = True
+DATABASE = bd_lib.DateDb(BIRTHDAY_DB)
+with DATABASE:
+    BD_USERS = DATABASE.get_birthdays(today)
+    # Get list of user in current date
+    # Get also 29-02 if it's the 28-02 and it's not a leap year
+    if today.month == 2 and today.day == 28:
+        if (today.year % 4) == 0:
+            if (today.year % 100) == 0:
+                if (today.year % 400) == 0:
+                    leap = True
+                else:
+                    leap = False
             else:
-                leap = False
+                leap = True
         else:
-            leap = True
-    else:
-        leap = False
+            leap = False
 
-    if not leap:
-        # Add birthdays of people born a 29 of february
-        BD_USERS += bd_lib.get_birthdays(datetime.date(1964, 2, 29))
+        if not leap:
+            # Add birthdays of people born a 29 of february
+            BD_USERS += DATABASE.get_birthdays(datetime.date(1964, 2, 29))
 
 
 @bot.event
