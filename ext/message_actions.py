@@ -191,6 +191,7 @@ async def poke_react(message, bot):
         'Pikachu': 'PIKAWOW_ID',
         'Butterfree': 'BRETAGNE_ID',
         'Piplup': 'TIPLOUFSHINE_ID',
+        'shinySparkles': '✨',
         'HOW DID YOU DO THAT?!': '👍',
         'belong to our dimension': '👍',
         'LEGENDARY': '👍',
@@ -215,7 +216,7 @@ async def poke_case(sentence, emoji_name, message, bot):
         if sentence == 'uncommon nothing':
             await message.add_reaction(emoji_name)
             await bot.get_channel(POKEMON_CHAN).send(random.choice(RAGE_RESPONSES))
-        elif sentence == 'how did you do that?!' or sentence == 'belong to our dimension' or sentence == 'LEGENDARY' or sentence == 'ULTRA BEAST':
+        elif sentence == 'HOW DID YOU DO THAT?!' or sentence == 'belong to our dimension' or sentence == 'LEGENDARY' or sentence == 'ULTRA BEAST':
             await message.add_reaction(emoji_name)
             await bot.get_channel(POKEMON_CHAN).send('En mode ZBRRRRRRRRRRRRRRRRRRRRRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         else:
