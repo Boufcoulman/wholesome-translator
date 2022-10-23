@@ -92,6 +92,7 @@ class MiscCmdCog(commands.Cog, name="Miscellaneous bot commands"):  # type:ignor
         inp: str
             The input you wish to repeat.
         """
+        await ctx.message.delete()
         await ctx.send(inp)
 
     @do_repeat.error
