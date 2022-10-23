@@ -84,7 +84,7 @@ class MiscCmdCog(commands.Cog, name="Miscellaneous bot commands"):  # type:ignor
                 file=sys.stderr
             )
 
-    @commands.command(name='repeat', aliases=['mimic', 'copy'])
+    @commands.command(name='repeat', aliases=['mimic', 'copy', 'say'])
     async def do_repeat(self, ctx, *, inp: str):
         """A simple command which repeats your input!
         Parameters
