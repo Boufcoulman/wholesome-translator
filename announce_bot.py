@@ -30,6 +30,7 @@ bot = commands.Bot(command_prefix=CMD_PREFIX, intents=intents)
 
 # Get actual date
 today = datetime.date.today()
+today = today.replace(year=1964)
 
 # If we're on monday, Inspire
 INSPIRE = today.weekday() == 0
