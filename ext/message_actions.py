@@ -219,6 +219,8 @@ async def poke_case(sentence, emoji_name, message, bot):
         elif sentence == 'HOW DID YOU DO THAT?!' or sentence == 'belong to our dimension' or sentence == 'LEGENDARY' or sentence == 'ULTRA BEAST':
             await message.add_reaction(emoji_name)
             await bot.get_channel(POKEMON_CHAN).send('En mode ZBRRRRRRRRRRRRRRRRRRRRRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+        elif sentence == 'shinySparkles':
+            await message.add_reaction(emoji_name)
         else:
             await message.add_reaction(get_emoji(emoji_IDs[emoji_name], bot))
 

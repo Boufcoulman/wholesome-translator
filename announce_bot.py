@@ -30,14 +30,16 @@ bot = commands.Bot(command_prefix=CMD_PREFIX, intents=intents)
 
 # Get actual date
 today = datetime.date.today()
-today = today.replace(year=1964)
 
 # If we're on monday, Inspire
 INSPIRE = today.weekday() == 0
 
+# Change date to query database
+queryday = today.replace(year=1964)
+
 DATABASE = bd_lib.DateDb(BIRTHDAY_DB)
 with DATABASE:
-    BD_USERS = DATABASE.get_birthdays(today)
+    BD_USERS = DATABASE.get_birthdays(queryday)
     # Get list of user in current date
     # Get also 29-02 if it's the 28-02 and it's not a leap year
     if today.month == 2 and today.day == 28:
